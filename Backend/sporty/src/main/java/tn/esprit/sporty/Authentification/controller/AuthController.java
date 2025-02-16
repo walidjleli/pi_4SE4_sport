@@ -1,6 +1,7 @@
 package tn.esprit.sporty.Authentification.controller;
 
 
+import tn.esprit.sporty.Authentification.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,17 +9,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.sporty.Authentification.model.*;
 import tn.esprit.sporty.Authentification.security.JwtUtil;
 import tn.esprit.sporty.Authentification.serviceImpl.CustomUserDetailsService;
-import tn.esprit.sporty.Authentification.model.EmailRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/rest/auth")
 @CrossOrigin("*")
 public class AuthController {
@@ -70,11 +68,14 @@ public class AuthController {
     @CrossOrigin("*")
     public ResponseEntity registerUser(@RequestBody User user) {
         try {
+            // Set default status based on role
+            if ("DOCTOR".equalsIgnoreCase(String.valueOf(user.getRole())) || "COACH".equalsIgnoreCase(String.valueOf(user.getRole()))) {
+                user.setStatus(Status.valueOf("OFF")); // Needs admin approval
+            } else {
+                user.setStatus(Status.valueOf("ON"));  // Other roles are active by default
+            }
+
             userDetailsService.createUser(user);
-
-            // String token = jwtUtil.createToken(user);
-
-            //LoginRes loginRes = new LoginRes(user.getEmail());
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException e) {
             ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -83,7 +84,6 @@ public class AuthController {
             ErrorRes errorResponse = new ErrorRes(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred while creating the user.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-
     }
 
     @GetMapping("/user/{userId}")
@@ -105,7 +105,7 @@ public class AuthController {
         try {
             System.out.println("Received request to get user role for email: " + email);
 
-            String role = userDetailsService.getUserRoleByEmail(email);
+            String role = String.valueOf(userDetailsService.getUserRoleByEmail(email));
             if (role != null) {
                 System.out.println("User role found: " + role);
                 UserRoleResponse response = new UserRoleResponse(role);
@@ -121,6 +121,16 @@ public class AuthController {
         }
     }
 
+    @PutMapping("/admin/authorize/{userId}")
+    public ResponseEntity<String> authorizeUser(@PathVariable Long userId) {
+        boolean updated = userDetailsService.updateUserStatus(userId, "ON");
+
+        if (updated) {
+            return ResponseEntity.ok("User authorized successfully.");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+    }
 
 
 

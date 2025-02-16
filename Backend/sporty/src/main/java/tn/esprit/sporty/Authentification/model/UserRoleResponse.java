@@ -17,3 +17,4 @@ public class UserRoleResponse {
 
     // Getter and setter for role
 }
+

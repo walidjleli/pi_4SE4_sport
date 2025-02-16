@@ -1,16 +1,20 @@
 package tn.esprit.sporty.Subgroup.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import tn.esprit.sporty.Authentification.model.User;
+import tn.esprit.sporty.Team.module.team;
+import tn.esprit.sporty.TrainingSession.module.TrainingSession;
 
 import java.util.List;
 @Entity
-@Data
 public class Subgroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY )
-    private int teamId;
+    int subgroupId;
+    String subgroupName;
     @ManyToMany
-    private List<User> teamPlayers;
+    List<TrainingSession> trainingSessions;
+    @ManyToOne
+    team team;
+
+
 }

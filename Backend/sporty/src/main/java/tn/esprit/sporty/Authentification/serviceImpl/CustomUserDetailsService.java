@@ -4,6 +4,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import tn.esprit.sporty.Authentification.model.Role;
+import tn.esprit.sporty.Authentification.model.Status;
 import tn.esprit.sporty.Authentification.model.User;
 import tn.esprit.sporty.Authentification.repository.UserRepository;
 
@@ -25,11 +27,11 @@ public class CustomUserDetailsService implements UserDetailsService {
                 org.springframework.security.core.userdetails.User.builder()
                         .username(user.getEmail())
                         .password(user.getPassword())
-                        .roles(user.getRole())
+                        .roles(String.valueOf(user.getRole()))
                         .build();
         return userDetails;
     }
-/////////////////////////////////////////////////
+    /////////////////////////////////////////////////
     public void createUser(User user) {
         User existingUser = userRepository.findByEmail(user.getEmail());
         if (existingUser != null) {
@@ -43,13 +45,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     public User getUserById(Long id){
         return userRepository.findById(id).orElse(null);
     }
-    public String getUserRoleByEmail(String email) {
+    public Role getUserRoleByEmail(String email) {
         User user = userRepository.findByEmail(email); // Assuming userRepository is available
         if (user != null) {
             return user.getRole(); // Assuming the User model has a method to get the role
         } else {
             return null;
         }
+    }
+
+    public boolean updateUserStatus(Long userId, String status) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            user.setStatus(Status.valueOf(status));
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
 }

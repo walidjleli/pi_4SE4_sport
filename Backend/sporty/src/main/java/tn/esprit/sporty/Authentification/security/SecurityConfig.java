@@ -4,23 +4,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import tn.esprit.sporty.Authentification.serviceImpl.CustomUserDetailsService;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
-@EnableWebSecurity
-public class SecurityConfig  {
+public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
         this.userDetailsService = customUserDetailsService;
-
     }
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http, NoOpPasswordEncoder noOpPasswordEncoder)
             throws Exception {
@@ -29,42 +28,33 @@ public class SecurityConfig  {
         return authenticationManagerBuilder.build();
     }
 
-
     @Bean
-   /* public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf().disable()
-                .authorizeRequests()
-                .requestMatchers("/rest/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        return http.build();
-    }*/
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-
-
-        return httpSecurity.headers().frameOptions().sameOrigin() // Allow framing only from the same origin
-                .and()
+        return httpSecurity
+                // Configure headers with lambda
+                .headers(headers ->
+                        headers.frameOptions(frameOptions -> frameOptions.sameOrigin())  // Allow framing from the same origin
+                )
+                // Disable CSRF
                 .csrf(csrf -> csrf.disable())
+                // Authorization configuration
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/rest/auth/**").permitAll()
                         .requestMatchers("/h2-console/login.do**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-
-
+                        .requestMatchers("/api/stats/**").permitAll()
+                        .requestMatchers("/rest/auth/admin/authorize/**").permitAll()
+                        .requestMatchers("/api/teams/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Session management configuration
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
-
     }
-
 
     @SuppressWarnings("deprecation")
     @Bean
     public NoOpPasswordEncoder passwordEncoder() {
         return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
     }
-
 }
