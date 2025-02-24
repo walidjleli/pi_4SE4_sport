@@ -3,7 +3,11 @@ package tn.esprit.sporty.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Entity
 @Data
 public class Stats {
@@ -17,7 +21,9 @@ public class Stats {
     private int interceptions;
     private int successfulPasses;
     @OneToOne
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
     @JsonIgnore
-    private User user;
+    @JoinColumn(name = "user_id")
+    private User player;
+
+
 }

@@ -16,7 +16,7 @@ public class StatsServiceImpl implements IStatService {
     private final StatsRepository statsRepository;
     private final UserRepository userRepository;
     @Override
-    public Stats saveStatistics(Long userId, Stats statistics) {
+    public Stats saveStatistics(Integer userId, Stats statistics) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
@@ -24,7 +24,7 @@ public class StatsServiceImpl implements IStatService {
             throw new RuntimeException("User already has statistics. Update instead.");
         }
 
-        statistics.setUser(user);
+        statistics.setPlayer(user);
         return statsRepository.save(statistics);
     }
 
@@ -33,7 +33,7 @@ public class StatsServiceImpl implements IStatService {
         return statsRepository.findAll();
     }
     @Override
-    public Optional<Stats> getStatisticsByUserId(Long userId) {
+    public Optional<Stats> getStatisticsByUserId(Integer userId) {
         return statsRepository.findByUserId(userId);
     }
     @Override
@@ -52,9 +52,13 @@ public class StatsServiceImpl implements IStatService {
             return statsRepository.save(existingStats);
         }).orElseThrow(() -> new RuntimeException("Statistics not found with id: " + id));
     }
-
     @Override
     public void deleteStatistics(Integer id) {
-        statsRepository.deleteById(id);
+        if (statsRepository.existsById(id)) {
+            statsRepository.deleteById(id);
+            System.out.println("Statistics deleted successfully.");
+        } else {
+            System.out.println("Statistics with ID " + id + " not found.");
+        }
     }
 }

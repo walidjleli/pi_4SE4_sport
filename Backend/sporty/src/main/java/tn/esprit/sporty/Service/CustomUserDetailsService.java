@@ -1,7 +1,9 @@
 package tn.esprit.sporty.Service;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tn.esprit.sporty.Entity.Role;
 import tn.esprit.sporty.Entity.Status;
@@ -12,21 +14,26 @@ import tn.esprit.sporty.Repository.UserRepository;
 public class CustomUserDetailsService implements UserService {
 
     private final UserRepository userRepository;
+    PasswordEncoder passwordEncoder;
 
     public CustomUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
-        UserDetails userDetails =
-                org.springframework.security.core.userdetails.User.builder()
-                        .username(user.getEmail())
-                        .password(user.getPassword())
-                        .roles(String.valueOf(user.getRole()))
-                        .build();
-        return userDetails;
+        if (user == null) {
+            throw new UsernameNotFoundException("Utilisateur non trouvé avec l'email : " + email);
+        }
+
+        // Ajouter des rôles sous forme d'authorities
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles(user.getRole().name())  // Utiliser le nom du rôle
+                .build();
     }
     /////////////////////////////////////////////////
     public void createUser(User user) {
@@ -38,7 +45,6 @@ public class CustomUserDetailsService implements UserService {
         // Mettre le roleStatus à OFF si l'utilisateur est un DOCTOR ou un COACH
         if (user.getRole() == Role.DOCTOR || user.getRole() == Role.COACH) {
             user.setRoleStatus(Status.OFF);
-
         } else {
             user.setRoleStatus(Status.ON); // Sinon, activé par défaut
         }
@@ -47,8 +53,8 @@ public class CustomUserDetailsService implements UserService {
     }
 
 
-    public User getUserById(Long id){
-        return userRepository.findById(id).orElse(null);
+    public User getUserById(Integer id){
+        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Utilisateur avec l'ID " + id + " non trouvé."));
     }
 
     @Override
@@ -57,22 +63,12 @@ public class CustomUserDetailsService implements UserService {
     }
 
     @Override
-    public void deleteUser(Long userId) {
+    public void deleteUser(Integer userId) {
         if (userRepository.existsById(userId)) {
             userRepository.deleteById(userId);
         } else {
             throw new UsernameNotFoundException("User with ID " + userId + " not found.");
         }
-    }
-
-    public boolean updateUserActivationStatus(Long userId, Status activationStatus) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user != null) {
-            user.setActivationStatus(activationStatus);  // Mettre à jour le statut (ON ou OFF)
-            userRepository.save(user);  // Sauvegarder les modifications
-            return true;
-        }
-        return false; // Retourner false si l'utilisateur n'existe pas
     }
 
     public Role getUserRoleByEmail(String email) {
@@ -82,17 +78,13 @@ public class CustomUserDetailsService implements UserService {
         } else {
             return null;
         }
+
+
+
+
+
     }
 
-    public boolean updateUserStatus(Long userId, String status) {
-        User user = userRepository.findById(userId).orElse(null);
-        if (user != null) {
-            user.setRoleStatus(Status.valueOf(status));
-            userRepository.save(user);
-            return true;
-        }
-        return false;
-    }
 
 
 
