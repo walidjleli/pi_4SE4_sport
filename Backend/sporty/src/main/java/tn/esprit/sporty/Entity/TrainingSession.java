@@ -14,6 +14,6 @@ public class TrainingSession implements Serializable {
     String name;
     Date startDate;
     Date endDate;
-    @ManyToMany
+    @ManyToMany(mappedBy = "trainingSessions")
     List<Subgroup> subgroups;
 }

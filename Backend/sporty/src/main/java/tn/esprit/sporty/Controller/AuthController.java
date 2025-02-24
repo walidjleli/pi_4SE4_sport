@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.sporty.Repository.UserRepository;
 import tn.esprit.sporty.security.JwtUtil;
@@ -34,14 +35,20 @@ public class AuthController {
 
 
     @Autowired
+
     private CustomUserDetailsService userDetailsService;
     private JwtUtil jwtUtil;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserRepository userRepository,
+                          JwtUtil jwtUtil,
+                          CustomUserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
-
+        this.userDetailsService = userDetailsService;
     }
 
     @ResponseBody
@@ -74,28 +81,29 @@ public class AuthController {
 
     @PostMapping("/register")
     @CrossOrigin("*")
-    public ResponseEntity registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
-            // Vérifier si le rôle nécessite une activation
-            if ("DOCTOR".equalsIgnoreCase(String.valueOf(user.getRole()))
-                    || "COACH".equalsIgnoreCase(String.valueOf(user.getRole()))) {
-                user.setActivationStatus(Status.OFF); // Nécessite l'activation par un admin
-            } else {
-                user.setActivationStatus(Status.ON);  // Les autres rôles sont activés directement
+            // Prevent users from registering as ADMIN
+            if (user.getRole() == Role.ADMIN) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ErrorRes(HttpStatus.FORBIDDEN, "Vous ne pouvez pas vous inscrire en tant qu'ADMIN."));
             }
 
-            // Générer un token d'activation si nécessaire
-            if(user.getActivationStatus() == Status.OFF) {
-                String token = UUID.randomUUID().toString();
-                user.setActivationToken(token);
-            }
+            // Set default activation status to OFF
+            user.setActivationStatus(Status.OFF);
 
+            // Encode the password before saving
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+            // Generate activation token
+            String token = UUID.randomUUID().toString();
+            user.setActivationToken(token);
+
+            // Save the user
             userDetailsService.createUser(user);
 
-            // Si activation nécessaire, envoyer un email
-            if(user.getActivationStatus() == Status.OFF) {
-                emailServiceImpl.sendActivationEmail(user);
-            }
+            // Send activation email
+            emailServiceImpl.sendActivationEmail(user);
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException e) {
@@ -109,14 +117,12 @@ public class AuthController {
 
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<User>> getUser(@PathVariable Long userId) {
-        User user = userDetailsService.getUserById(userId);
-        List<User> userList = new ArrayList<>();
+    public ResponseEntity<User> getUser(@PathVariable Integer userId) {
+        User user = userDetailsService.getUserById(userId);  // Récupérer l'utilisateur par son ID
         if (user != null) {
-            userList.add(user);
-            return new ResponseEntity<>(userList, HttpStatus.OK);
+            return new ResponseEntity<>(user, HttpStatus.OK);  // Utilisateur trouvé, retourne avec statut 200 OK
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // Utilisateur non trouvé, retourne avec statut 404 NOT FOUND
         }
     }
 
@@ -143,19 +149,9 @@ public class AuthController {
         }
     }
 
-    @PutMapping("/admin/authorize/{userId}")
-    public ResponseEntity<String> authorizeUser(@PathVariable Long userId) {
-        boolean updated = userDetailsService.updateUserActivationStatus(userId, Status.ON);
-
-        if (updated) {
-            return ResponseEntity.ok("Utilisateur activé avec succès.");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur non trouvé.");
-        }
-    }
 
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+    public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
         try {
             userDetailsService.deleteUser(userId);
             return ResponseEntity.ok("User deleted successfully.");
@@ -222,6 +218,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token invalide ou expiré.");
         }
     }
+
 
 
 

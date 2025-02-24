@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IStatService {
-    Stats saveStatistics(Long userId,Stats statistics);
+    Stats saveStatistics(Integer userId,Stats statistics);
+
+
     List<Stats> getAllStatistics();
+
+
     Optional<Stats> getStatisticsById(Integer id);
-    Optional<Stats> getStatisticsByUserId(Long id);
+    Optional<Stats> getStatisticsByUserId(Integer id);
     Stats updateStatistics(Integer id, Stats statistics);
     void deleteStatistics(Integer id);
 }

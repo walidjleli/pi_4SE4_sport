@@ -5,7 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import tn.esprit.sporty.Service.CustomUserDetailsService;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,10 +22,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, NoOpPasswordEncoder noOpPasswordEncoder)
+    public AuthenticationManager authenticationManager(HttpSecurity http, PasswordEncoder passwordEncoder)
             throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(noOpPasswordEncoder);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
 
@@ -34,16 +36,18 @@ public class SecurityConfig {
                 .headers(headers ->
                         headers.frameOptions(frameOptions -> frameOptions.sameOrigin())  // Allow framing from the same origin
                 )
-                // Disable CSRF
                 .csrf(csrf -> csrf.disable())
-                // Authorization configuration
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/rest/auth/**").permitAll()
                         .requestMatchers("/h2-console/login.do**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/stats/**").permitAll()
-                        .requestMatchers("/rest/auth/admin/authorize/**").permitAll()
-                        .requestMatchers("/api/teams/**").permitAll()
+                        .requestMatchers("/addteam").permitAll()
+                        .requestMatchers("/api/subgroups/**").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/rest/stat/**").permitAll()
+
+
                         .anyRequest().authenticated()
                 )
                 // Session management configuration
@@ -51,9 +55,12 @@ public class SecurityConfig {
                 .build();
     }
 
-    @SuppressWarnings("deprecation")
+
+
+
     @Bean
-    public NoOpPasswordEncoder passwordEncoder() {
-        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
+
 }

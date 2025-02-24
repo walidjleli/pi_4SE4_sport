@@ -4,5 +4,6 @@ public enum Role {
     DOCTOR,
     COACH,
     PLAYER,
-    ADMIN
+    ADMIN,
+    FAN
 }
