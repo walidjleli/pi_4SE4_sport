@@ -1,0 +1,31 @@
+/* ✅ Match the style of navigation items */
+.btn-login,
+.btn-logout {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+}
+
+/* 🔵 Login/Register Button Style */
+.btn-login {
+    background: #ff4b5c; /* Match theme color */
+    color: white;
+    text-decoration: none;
+}
+
+.btn-login:hover {
+    background: #e63950; /* Slightly darker on hover */
+}
+
+/* 🔴 Logout Button Style */
+.btn-logout {
+    background: #dc3545; /* Standard red theme */
+    color: white;
+    text-decoration: none;
+}
+
+.btn-logout:hover {
+    background: #b02a37;
+}

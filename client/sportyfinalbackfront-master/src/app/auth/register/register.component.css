@@ -1,0 +1,92 @@
+/* Style général pour login et register */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #121212; /* Fond sombre */
+}
+
+.auth-card {
+    background: #1e1e2d; /* Fond carte */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+    width: 400px;
+    color: #fff;
+}
+
+.form-control {
+    border-radius: 5px;
+    height: 45px;
+    background: #2a2a3c;
+    color: white;
+    border: none;
+}
+
+.form-control::placeholder {
+    color: #b0b3b8;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.btn-danger {
+    background-color: #ff4b5c;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #e63950;
+}
+
+.text-light {
+    color: #fff;
+}
+
+.text-light:hover {
+    text-decoration: underline;
+}
+
+/* Alignement des champs */
+.form-group {
+    width: 100%; /* Assure que les champs prennent toute la largeur */
+    display: flex;
+    flex-direction: column; /* Aligner les labels au-dessus des champs */
+    margin-bottom: 15px; /* Espacement entre chaque champ */
+}
+
+.form-label {
+    font-weight: bold;
+    margin-bottom: 5px; /* Ajoute un espace sous le label */
+}
+
+.input-full {
+    width: 100%; /* Force tous les champs à la même largeur */
+    height: 45px; /* Ajuste la hauteur des champs */
+    padding: 10px;
+    border-radius: 5px;
+    background: #2a2a3c;
+    color: white;
+    border: none;
+}
+
+.input-full::placeholder {
+    color: #b0b3b8;
+}
+
+/* Sélection des rôles */
+select.input-full {
+    cursor: pointer;
+}
+
+/* Ajustement du bouton */
+.btn-danger {
+    background-color: #ff4b5c;
+    border: none;
+}
+
+.btn-danger:hover {
+    background-color: #e63950;
+}

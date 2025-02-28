@@ -3,34 +3,45 @@ import { RouterModule, Routes } from '@angular/router';
 import { AllTemplateBackComponent } from './BackOffice/all-template-back/all-template-back.component';
 import { HomeComponent } from './BackOffice/home/home.component';
 import { WidgetsComponent } from './BackOffice/widgets/widgets.component';
-import { TablesComponent } from './BackOffice/tables/tables.component';
 import { FormsComponent } from './BackOffice/forms/forms.component';
 import { AllTemplateFrontComponent } from './FrontOffice/all-template-front/all-template-front.component';
-import { HomefrontComponent } from './FrontOffice/homefront/homefront.component'; 
-import { MatchesComponent } from './FrontOffice/matches/matches.component'; 
-import { PlayersComponent } from './FrontOffice/players/players.component'; 
-import { BlogsComponent } from './FrontOffice/blogs/blogs.component'; 
-import { ContactComponent } from './FrontOffice/contact/contact.component'; 
+import { HomefrontComponent } from './FrontOffice/homefront/homefront.component';
+import { MatchesComponent } from './FrontOffice/matches/matches.component';
+import { PlayersComponent } from './FrontOffice/players/players.component';
+import { BlogsComponent } from './FrontOffice/blogs/blogs.component';
+import { ContactComponent } from './FrontOffice/contact/contact.component';
+import { AddStatsComponent } from './add-stats/add-stats.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { authGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   {
-    path: 'back-office',
-    component: AllTemplateBackComponent,
+    path: 'front-office',
+    component: AllTemplateFrontComponent,
+    canActivate: [authGuard], // ✅ FAN users can access only this
     children: [
-      { path: '', component: HomeComponent },
-      { path: 'widget', component: WidgetsComponent },
-      { path: 'tables', component: TablesComponent },
-      { path: 'forms', component: FormsComponent }
+      { path: '', component: HomefrontComponent },
+      { path: 'matches', component: MatchesComponent },
+      { path: 'players', component: PlayersComponent },
+      { path: 'blogs', component: BlogsComponent },
+      { path: 'contact', component: ContactComponent }
     ]
   },
   {
-    path: 'front-office',
-    component: AllTemplateFrontComponent,
+    path: 'back-office',
+    component: AllTemplateBackComponent,
+    canActivate: [authGuard], // ❌ FAN users CANNOT access this
     children: [
-      { path: '', component: HomefrontComponent } ,{ path: 'matches', component: MatchesComponent } ,{ path: 'players', component: PlayersComponent },{ path: 'blogs', component: BlogsComponent },{ path: 'contact', component: ContactComponent }
+      { path: '', component: HomeComponent },
+      { path: 'widget', component: WidgetsComponent },
+      { path: 'forms', component: FormsComponent },
+      { path: 'add-stats/:userId', component: AddStatsComponent }
     ]
   },
-  { path: '', redirectTo: 'back-office', pathMatch: 'full' } 
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: '**', redirectTo: 'login' } // 
 ];
 
 @NgModule({
