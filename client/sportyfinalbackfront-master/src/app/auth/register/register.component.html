@@ -1,0 +1,57 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="text-center text-light">Créer un compte</h2>
+
+        <div *ngIf="errorMessage" class="alert alert-danger">
+            {{ errorMessage }}
+        </div>
+
+        <form (submit)="register()">
+            <div class="form-group">
+                <label for="firstName" class="form-label text-light">
+                    <i class="fas fa-user"></i> Prénom
+                </label>
+                <input type="text" [(ngModel)]="userData.firstName" name="firstName" class="form-control input-full" placeholder="Prénom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="lastName" class="form-label text-light">
+                    <i class="fas fa-user"></i> Nom
+                </label>
+                <input type="text" [(ngModel)]="userData.lastName" name="lastName" class="form-control input-full" placeholder="Nom" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label text-light">
+                    <i class="fas fa-envelope"></i> Email
+                </label>
+                <input type="email" [(ngModel)]="userData.email" name="email" class="form-control input-full" placeholder="Adresse e-mail" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label text-light">
+                    <i class="fas fa-lock"></i> Mot de passe
+                </label>
+                <input type="password" [(ngModel)]="userData.password" name="password" class="form-control input-full" placeholder="Mot de passe" required>
+            </div>
+
+            <div class="form-group">
+                <label for="role" class="form-label text-light">
+                    <i class="fas fa-user-tag"></i> Rôle
+                </label>
+                <select [(ngModel)]="userData.role" name="role" class="form-control input-full" required>
+                    <option value="" disabled selected>Choisir un rôle</option>
+                    <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 mt-3">
+                <i class="fas fa-user-plus"></i> S'inscrire
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <a routerLink="/login" class="text-light">Déjà un compte ? Se connecter</a>
+        </div>
+    </div>
+</div>

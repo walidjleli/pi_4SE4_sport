@@ -9,7 +9,6 @@ import { NavbarBackComponent } from './BackOffice/navbar-back/navbar-back.compon
 import { SidebarBackComponent } from './BackOffice/sidebar-back/sidebar-back.component';
 import { HomeComponent } from './BackOffice/home/home.component';
 import { WidgetsComponent } from './BackOffice/widgets/widgets.component';
-import { TablesComponent } from './BackOffice/tables/tables.component';
 import { FormsComponent } from './BackOffice/forms/forms.component';
 import { HeaderComponent } from './FrontOffice/header/header.component';
 import { FooterFrontComponent } from './FrontOffice/footer-front/footer-front.component';
@@ -19,6 +18,17 @@ import { MatchesComponent } from './FrontOffice/matches/matches.component';
 import { PlayersComponent } from './FrontOffice/players/players.component';
 import { BlogsComponent } from './FrontOffice/blogs/blogs.component';
 import { ContactComponent } from './FrontOffice/contact/contact.component';
+import { HttpClientModule } from '@angular/common/http';
+import { AddStatsComponent } from './add-stats/add-stats.component';
+import { FormsModule } from '@angular/forms';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './auth/auth.interceptor';
+
+
+
+
 
 @NgModule({
   declarations: [
@@ -29,7 +39,6 @@ import { ContactComponent } from './FrontOffice/contact/contact.component';
     SidebarBackComponent,
     HomeComponent,
     WidgetsComponent,
-    TablesComponent,
     FormsComponent,
     HeaderComponent,
     FooterFrontComponent,
@@ -38,13 +47,19 @@ import { ContactComponent } from './FrontOffice/contact/contact.component';
     MatchesComponent,
     PlayersComponent,
     BlogsComponent,
-    ContactComponent
-  ],
+    ContactComponent,
+    AddStatsComponent,
+    LoginComponent,
+    RegisterComponent,
+    
+   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FormsModule  
   ],
-  providers: [],
+  providers: [ { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
