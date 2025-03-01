@@ -13,10 +13,10 @@ export class RegisterComponent {
     password: '',
     firstName: '',
     lastName: '',
-    role: ''
+    role: 'FAN'
   };
 
-  roles: string[] = ['DOCTOR', 'COACH', 'PLAYER', 'ADMIN', 'FAN']; // 🔥 Liste des rôles
+  roles: string[] = ['DOCTOR', 'COACH', 'PLAYER', 'ADMIN', 'FAN']; 
 
   errorMessage: string = ''; 
 

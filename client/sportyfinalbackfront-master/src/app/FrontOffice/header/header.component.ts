@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -8,23 +9,22 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent implements OnInit {
   isLoggedIn: boolean = false;
-  userName: string | null = null;
+  firstName: string | null = null;
 
-  constructor(private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  ngOnInit() {
-    const token = localStorage.getItem('token');
-    this.isLoggedIn = !!token;
-
-    // Retrieve and store the username from localStorage
-    this.userName = localStorage.getItem('userName'); 
+  ngOnInit(): void {
+    this.loadUserDetails();
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('role');
+  loadUserDetails(): void {
+    this.isLoggedIn = this.authService.isAuthenticated();
+    this.firstName = localStorage.getItem('firstName'); // ✅ Get first name from localStorage
+  }
+
+  logout(): void {
+    this.authService.logout();
     this.isLoggedIn = false;
-    this.router.navigate(['/login']);
+    this.firstName = null;
   }
 }

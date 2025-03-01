@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'http://localhost:8090/rest/auth'; // Adjust API URL if needed
+  private baseUrl = 'http://localhost:8090/rest/auth'; // 🔹 API URL
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -21,14 +21,15 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/register`, userData, this.httpOptions);
   }
 
-  /** ✅ Login User */
+  /** ✅ Login and fetch user details */
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, credentials, this.httpOptions).pipe(
       tap((response: any) => {
-        if (response.token) {
+        if (response.token && response.role) { // 🔥 Vérifier si le rôle est bien renvoyé
           this.setToken(response.token);
-          this.setUserRole(response.role); // Store user role
-          this.redirectUser(response.role, response.token); // Redirect after login
+          this.setUserRole(response.role);
+          this.setFirstName(response.firstName);
+          this.redirectUser(response.role);
         }
       })
     );
@@ -39,17 +40,22 @@ export class AuthService {
     localStorage.setItem('token', token);
   }
 
-  /** ✅ Retrieve token from localStorage */
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  /** ✅ Store user role in localStorage */
+  /** ✅ Store role in localStorage */
   setUserRole(role: string): void {
     localStorage.setItem('role', role);
   }
 
-  /** ✅ Get user role */
+  /** ✅ Store first name in localStorage */
+  setFirstName(firstName: string): void {
+    localStorage.setItem('firstName', firstName);
+  }
+
+  /** ✅ Retrieve token */
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  /** ✅ Retrieve user role */
   getUserRole(): string | null {
     return localStorage.getItem('role');
   }
@@ -61,17 +67,16 @@ export class AuthService {
 
   /** ✅ Logout and clear storage */
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    this.router.navigate(['/login']); // Redirect to login after logout
+    localStorage.clear();
+    this.router.navigate(['/front-office']); // 🔥 Redirect to home after logout
   }
 
-  /** ✅ Redirect user based on role with token in URL */
-  redirectUser(role: string, token: string): void {
-    if (role === 'FAN') {
-      this.router.navigate(['/front-office'], { queryParams: { token: token } });
+  /** ✅ Redirect user based on role */
+  redirectUser(role: string): void {
+    if (role === 'ADMIN' || role === 'COACH' || role === 'DOCTOR') {
+      this.router.navigate(['/back-office']);
     } else {
-      this.logout(); // Logout if the role is not FAN
+      this.router.navigate(['/front-office']);
     }
   }
 }
