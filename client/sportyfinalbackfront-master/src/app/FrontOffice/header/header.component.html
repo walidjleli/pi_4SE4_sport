@@ -54,14 +54,14 @@
               <li><a routerLink="/front-office/blogs" class="nav-link">Blog</a></li>
               <li><a routerLink="/front-office/contact" class="nav-link">Contact</a></li>
               <li class="nav-item">
-                <a *ngIf="!isLoggedIn" routerLink="/login" class="nav-link btn-login">Login / Register</a>
-                
-                <span *ngIf="isLoggedIn" class="nav-link text-white">
-                  <i class="fas fa-user"></i> {{ userName }}
-                </span>
-              
-                <a *ngIf="isLoggedIn" (click)="logout()" class="nav-link btn-logout">Logout</a>
-              </li>
+  <a *ngIf="!isLoggedIn" routerLink="/login" class="nav-link btn-login">Login / Register</a>
+  <span *ngIf="isLoggedIn" class="nav-link text-white">
+    Welcome, {{ firstName ? firstName : 'Guest' }}
+  </span>
+  
+    
+  <a *ngIf="isLoggedIn" (click)="logout()" class="nav-link btn-logout">Logout</a>
+</li>
               
             </ul>
           </nav>

@@ -16,10 +16,11 @@ import { RegisterComponent } from './auth/register/register.component';
 import { authGuard } from './auth/auth.guard';
 
 const routes: Routes = [
+  { path: '', redirectTo: '/front-office', pathMatch: 'full' }, // ✅ Page d'accueil par défaut
+
   {
     path: 'front-office',
     component: AllTemplateFrontComponent,
-    canActivate: [authGuard], // ✅ FAN users can access only this
     children: [
       { path: '', component: HomefrontComponent },
       { path: 'matches', component: MatchesComponent },
@@ -31,7 +32,7 @@ const routes: Routes = [
   {
     path: 'back-office',
     component: AllTemplateBackComponent,
-    canActivate: [authGuard], // ❌ FAN users CANNOT access this
+    canActivate: [authGuard], // 🔥 Protection
     children: [
       { path: '', component: HomeComponent },
       { path: 'widget', component: WidgetsComponent },
@@ -41,7 +42,7 @@ const routes: Routes = [
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: '**', redirectTo: 'login' } // 
+  { path: '**', redirectTo: '/front-office' } // 🔥 Redirection vers Home
 ];
 
 @NgModule({
