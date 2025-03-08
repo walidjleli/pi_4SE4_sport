@@ -79,4 +79,26 @@ export class AuthService {
       this.router.navigate(['/front-office']);
     }
   }
+
+  requestPasswordReset(email: string): Observable<any> {
+    console.log("📡 Envoi de la demande de réinitialisation pour :", email);
+    return this.http.post(
+      `http://localhost:8090/rest/auth/request-reset`,
+      { email }, // ✅ Bien envoyer l'email dans le body
+      { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
+    );
+  }
+  
+  
+  
+  
+  
+  resetPassword(token: string, newPassword: string): Observable<any> {
+  return this.http.post(`${this.baseUrl}/reset-password`, null, { 
+    params: { token, newPassword }
+  });
+}
+
+  
+
 }

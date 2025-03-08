@@ -1,0 +1,62 @@
+/* 🔹 Fond sombre et mise en page */
+.container {
+  max-width: 800px;
+}
+
+/* 🔹 Cartes avec bordures stylées */
+.card {
+  border-radius: 10px;
+  border: none;
+}
+
+/* 🔹 Liste des équipes stylisée */
+.list-group-item {
+  transition: all 0.3s ease-in-out;
+}
+
+.list-group-item:hover {
+  background: #343a40;
+  cursor: pointer;
+}
+
+/* 🔹 Style des boutons */
+.btn {
+  transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+/* 🔹 Labels et champs */
+.form-label {
+  font-weight: bold;
+}
+
+.form-control, .form-select {
+  border-radius: 5px;
+  background: #2a2a3c;
+  color: white;
+  border: none;
+}
+
+.form-control::placeholder, .form-select::placeholder {
+  color: #b0b3b8;
+}
+
+/* 🔹 Messages et alertes */
+.alert {
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.alert-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.alert-danger {
+  background-color: #dc3545;
+  color: white;
+}
