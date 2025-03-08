@@ -25,10 +25,12 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth/auth.interceptor';
-
-
-
-
+import { TeamManagementComponent } from './BackOffice/team-management/team-management.component';
+import { TeamService } from './services/team.service';
+import { StatsService } from './services/stats.service'; // ✅ Ajout du service des stats
+import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { UserService } from './services/user.service';
 
 @NgModule({
   declarations: [
@@ -51,15 +53,22 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     AddStatsComponent,
     LoginComponent,
     RegisterComponent,
-    
-   ],
+    TeamManagementComponent,
+    ResetPasswordComponent,
+    ForgotPasswordComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule  
   ],
-  providers: [ { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }],
+  providers: [
+    TeamService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    StatsService, // ✅ Correction ici (ajout de la virgule)
+    UserService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

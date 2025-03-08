@@ -1,0 +1,94 @@
+<div class="container mt-5">
+    <h2 class="text-center mb-4 text-light">
+        <i class="fa fa-users"></i> Gestion des Équipes
+    </h2>
+  
+    <!-- ✅ Ajouter une Équipe -->
+    <div class="card bg-dark text-light p-4 mb-4 shadow">
+        <h4><i class="fa fa-plus-circle"></i> Ajouter une Équipe</h4>
+        <div class="input-group">
+            <input type="text" [(ngModel)]="newTeamName" class="form-control" placeholder="Nom de l'équipe">
+            <button class="btn btn-success ms-2" (click)="addTeam()">
+                <i class="fa fa-check"></i> Ajouter
+            </button>
+        </div>
+    </div>
+  
+    <!-- ✅ Liste des Équipes -->
+    <div class="card bg-dark text-light p-4 mb-4 shadow">
+        <h4><i class="fa fa-list"></i> Liste des Équipes</h4>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center"
+                *ngFor="let team of teams">
+                <span><i class="fa fa-users"></i> {{ team.teamName }}</span>
+                <div>
+                    <button class="btn btn-primary btn-sm me-2" (click)="selectTeam(team)">
+                        <i class="fa fa-cogs"></i> Gérer
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteTeam(team.teamId!)">
+                        <i class="fa fa-trash"></i> Supprimer
+                    </button>
+                </div>
+            </li>
+        </ul>
+    </div>
+  
+    <!-- ✅ Gérer une Équipe (Affiché si une équipe est sélectionnée) -->
+    <div class="card bg-dark text-light p-4 mb-4 shadow" *ngIf="selectedTeam">
+        <h4><i class="fa fa-cogs"></i> Gérer l'Équipe: {{ selectedTeam.teamName }}</h4>
+  
+        <!-- ✅ Sélection de joueurs -->
+        <div class="mb-3">
+            <label for="playerSelect" class="form-label"><i class="fa fa-user"></i> Ajouter des joueurs :</label>
+            <select id="playerSelect" class="form-select" (change)="onPlayerSelected($event)">
+                <option *ngFor="let player of players" [value]="player.id">
+                    {{ player.firstName }} {{ player.lastName }}
+                </option>
+            </select>
+        </div>
+  
+                <!-- ✅ Liste des joueurs de l'équipe -->
+                <h5><i class="fa fa-users"></i> Joueurs affectés :</h5>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center"
+                *ngFor="let player of selectedTeam?.players">
+                {{ player.firstName }} {{ player.lastName }}
+                <button class="btn btn-warning btn-sm" (click)="removePlayer(player)">
+                    <i class="fa fa-minus-circle"></i> Retirer
+                </button>
+            </li>
+        </ul>
+
+  
+        <!-- ✅ Sélection d'un coach -->
+        <div class="mb-3 mt-3">
+            <label for="coachSelect" class="form-label"><i class="fa fa-user-tie"></i> Sélectionner un Coach :</label>
+            <select id="coachSelect" class="form-select" (change)="onCoachSelected($event)">
+                <option *ngFor="let coach of coaches" [value]="coach.id">
+                    {{ coach.firstName }} {{ coach.lastName }}
+                </option>
+            </select>
+        </div>
+  
+        <div *ngIf="selectedTeam.coach" class="mt-2">
+            <strong><i class="fa fa-user-tie"></i> Coach :</strong> 
+            {{ selectedTeam.coach.firstName }} {{ selectedTeam.coach.lastName }}
+        </div>
+  
+        <!-- ✅ Sélection d'un docteur -->
+        <div class="mb-3 mt-3">
+            <label for="doctorSelect" class="form-label"><i class="fa fa-user-md"></i> Sélectionner un Docteur :</label>
+            <select id="doctorSelect" class="form-select" (change)="onDoctorSelected($event)">
+                <option *ngFor="let doctor of doctors" [value]="doctor.id">
+                    {{ doctor.firstName }} {{ doctor.lastName }}
+                </option>
+            </select>
+        </div>
+  
+        <div *ngIf="selectedTeam.doctor" class="mt-2">
+            <strong><i class="fa fa-user-md"></i> Docteur :</strong> 
+            {{ selectedTeam.doctor.firstName }} {{ selectedTeam.doctor.lastName }}
+        </div>
+    </div>
+  </div>
+  

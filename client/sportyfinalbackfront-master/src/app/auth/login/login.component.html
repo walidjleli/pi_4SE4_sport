@@ -2,11 +2,13 @@
     <div class="auth-card">
         <h2 class="text-center text-light">Se connecter</h2>
 
+        <!-- ✅ Affichage des erreurs -->
         <div *ngIf="errorMessage" class="alert alert-danger">
             {{ errorMessage }}
         </div>
 
         <form (submit)="login()">
+            <!-- 🔹 Champ Email -->
             <div class="form-group">
                 <label for="email" class="form-label text-light">
                     <i class="fas fa-envelope"></i> Email
@@ -14,6 +16,7 @@
                 <input type="email" [(ngModel)]="email" name="email" class="form-control input-full" placeholder="Adresse e-mail" required>
             </div>
 
+            <!-- 🔹 Champ Mot de Passe -->
             <div class="form-group">
                 <label for="password" class="form-label text-light">
                     <i class="fas fa-lock"></i> Mot de passe
@@ -21,11 +24,18 @@
                 <input type="password" [(ngModel)]="password" name="password" class="form-control input-full" placeholder="Mot de passe" required>
             </div>
 
+            <!-- 🔹 Bouton de Connexion -->
             <button type="submit" class="btn btn-danger w-100 mt-3">
                 <i class="fas fa-sign-in-alt"></i> Connexion
             </button>
         </form>
 
+        <!-- ✅ Ajout du lien "Mot de passe oublié ?" -->
+        <div class="text-center mt-3">
+            <a routerLink="/forgot-password" class="text-warning">Mot de passe oublié ?</a>
+        </div>
+
+        <!-- 🔹 Lien pour créer un compte -->
         <div class="text-center mt-3">
             <a routerLink="/register" class="text-light">Créer un compte</a>
         </div>

@@ -14,12 +14,11 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   // 🔹 Vérifier si l'utilisateur essaie d'accéder au Back-Office
   if (state.url.startsWith('/back-office')) {
-    // ❌ Si l'utilisateur est un FAN, il ne peut pas aller au Back-Office
     if (role === 'FAN') {
       router.navigate(['/front-office']);
       return false;
     }
   }
 
-  return true; // ✅ Autoriser l'accès
+  return true; 
 };
