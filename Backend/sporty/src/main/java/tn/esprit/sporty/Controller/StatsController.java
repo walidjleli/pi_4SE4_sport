@@ -1,15 +1,16 @@
 package tn.esprit.sporty.Controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.sporty.Entity.Stats;
 import tn.esprit.sporty.Service.IStatService;
-import tn.esprit.sporty.Service.StatsServiceImpl;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin( "*")
 @RequestMapping("/rest/stat")
 public class StatsController {
     private final IStatService  statisticsService;
@@ -19,9 +20,12 @@ public class StatsController {
     }
 
 
-    @PostMapping("/statistics/{userId}")
-    public ResponseEntity<Stats> createStatistics(@PathVariable Integer userId, @RequestBody Stats statistics) {
-        return ResponseEntity.ok(statisticsService.saveStatistics(userId, statistics));
+
+    @PostMapping("/add/{userId}")
+    public ResponseEntity<?> addStats(@PathVariable int userId, @RequestBody Stats stats) {
+
+        Stats savedStats = statisticsService.saveStatistics(userId, stats);
+        return ResponseEntity.ok(savedStats);
     }
     @GetMapping("/user/{userId}")
     public ResponseEntity<Stats> getStatisticsByUserId(@PathVariable Integer userId) {

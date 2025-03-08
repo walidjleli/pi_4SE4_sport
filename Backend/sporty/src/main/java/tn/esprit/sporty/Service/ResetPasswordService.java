@@ -1,5 +1,6 @@
 package tn.esprit.sporty.Service;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import tn.esprit.sporty.Entity.User;
@@ -17,38 +18,52 @@ public class ResetPasswordService {
     @Autowired
     private EmailServiceImpl emailServiceImpl;
 
-    // Générer et envoyer un token de réinitialisation
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); // ✅ Ajout de l'encodeur
+
+    // ✅ Générer et envoyer un token de réinitialisation
     public boolean sendResetPasswordToken(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
+            System.out.println("❌ Aucun utilisateur trouvé avec cet email !");
             return false;
         }
 
-        // Générer un token unique
+        // ✅ Générer un token unique et stocker en base
         String resetToken = UUID.randomUUID().toString();
         user.setResetToken(resetToken);
         userRepository.save(user);
 
-        // Envoyer le token par email
-        String subject = "Réinitialisation de votre mot de passe";
-        String message = "Cliquez sur ce lien pour réinitialiser votre mot de passe : " +
-                "http://localhost:8090/rest/auth/reset-password?token=" + resetToken;
+        // ✅ Envoyer l’email avec le lien de réinitialisation
+        String subject = "🔑 Réinitialisation de votre mot de passe";
+        String message = "Bonjour " + user.getFirstName() + ",\n\n"
+                + "Veuillez cliquer sur le lien ci-dessous pour réinitialiser votre mot de passe :\n"
+                + "🔗 http://localhost:4200/reset-password?token=" + resetToken + "\n\n"
+                + "Cordialement,\nVotre Équipe";
 
         emailServiceImpl.sendSimpleMessage(email, subject, message);
+        System.out.println("✅ Email de réinitialisation envoyé à " + email);
         return true;
     }
 
-    // Vérifier et réinitialiser le mot de passe
+    // ✅ Vérifier et réinitialiser le mot de passe
     public boolean resetPassword(String token, String newPassword) {
+        System.out.println("🔍 Vérification du token reçu : " + token);
+
         Optional<User> userOpt = userRepository.findByResetToken(token);
         if (userOpt.isEmpty()) {
+            System.out.println("❌ Token invalide ou expiré !");
             return false;
         }
 
         User user = userOpt.get();
-        user.setPassword(newPassword);  // Hacher le mot de passe avant de l’enregistrer
-        user.setResetToken(null);  // Supprimer le token après utilisation
+
+        // ✅ Hash du mot de passe avant enregistrement
+        String hashedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(hashedPassword);
+        user.setResetToken(null);  // ✅ Suppression du token après usage
         userRepository.save(user);
+
+        System.out.println("✅ Mot de passe réinitialisé avec succès !");
         return true;
     }
 }

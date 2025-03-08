@@ -12,19 +12,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.sporty.Repository.UserRepository;
+import tn.esprit.sporty.Service.UserService;
 import tn.esprit.sporty.security.JwtUtil;
 import tn.esprit.sporty.Service.EmailServiceImpl;
 import tn.esprit.sporty.Service.ResetPasswordService;
 import tn.esprit.sporty.Service.CustomUserDetailsService;
 import tn.esprit.sporty.Entity.*;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/rest/auth")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
 
     private EmailRequest emailRequest;
@@ -53,31 +55,32 @@ public class AuthController {
 
     @ResponseBody
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity login(@RequestBody LoginReq loginReq) {
-
-
+    public ResponseEntity<?> login(@RequestBody LoginReq loginReq) {
         try {
             Authentication authentication =
                     authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginReq.getEmail(), loginReq.getPassword()));
             String email = authentication.getName();
 
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            }
 
-            User user = new User(email, "");
             String token = jwtUtil.createToken(user);
-            System.out.println("token generated: " + token);
-            LoginRes loginRes = new LoginRes(email, token);
+            System.out.println("Token generated: " + token);
+
+            // ✅ Match the new constructor
+            LoginRes loginRes = new LoginRes(user.getEmail(), token, user.getFirstName(), user.getRole().name());
 
             return ResponseEntity.ok(loginRes);
 
         } catch (BadCredentialsException e) {
-            ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, "Invalid username or password");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password");
         } catch (Exception e) {
-            System.out.println(e);
-            ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST, e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during login");
         }
     }
+
 
     @PostMapping("/register")
     @CrossOrigin("*")
@@ -116,16 +119,11 @@ public class AuthController {
     }
 
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable Integer userId) {
-        User user = userDetailsService.getUserById(userId);  // Récupérer l'utilisateur par son ID
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);  // Utilisateur trouvé, retourne avec statut 200 OK
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // Utilisateur non trouvé, retourne avec statut 404 NOT FOUND
-        }
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
     }
-
 
     @GetMapping("/user/role")
     public ResponseEntity<UserRoleResponse> getUserRoleByEmail(@RequestBody EmailRequest emailRequest) {
@@ -164,7 +162,7 @@ public class AuthController {
     }
 
     //////
-    @PostMapping("/activate")
+    @GetMapping("/activate")
     public ResponseEntity<String> activateAccount(@RequestParam("email") String email,
                                                   @RequestParam("token") String token) {
         try {
@@ -199,28 +197,67 @@ public class AuthController {
 
     // Endpoint pour demander un reset de mot de passe
     @PostMapping("/request-reset")
-    public ResponseEntity<String> requestResetPassword(@RequestParam String email) {
-        boolean result = resetPasswordService.sendResetPasswordToken(email);
-        if (result) {
-            return ResponseEntity.ok("Email de réinitialisation envoyé avec succès.");
+    @CrossOrigin(origins = "http://localhost:4200")
+    public ResponseEntity<Map<String, String>> requestReset(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        Map<String, String> response = new HashMap<>();
+
+        System.out.println("📩 Email reçu pour reset : " + email);
+
+        boolean emailSent = resetPasswordService.sendResetPasswordToken(email);
+
+        if (emailSent) {
+            response.put("message", "✅ Mail envoyé !");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur introuvable.");
+            response.put("message", "❌ Email non trouvé !");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+
 
     // Endpoint pour réinitialiser le mot de passe
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
+        System.out.println("📩 Tentative de réinitialisation avec Token : " + token);
+        System.out.println("🔐 Nouveau mot de passe : " + newPassword);
+
         boolean result = resetPasswordService.resetPassword(token, newPassword);
+
         if (result) {
+            System.out.println("✅ Réinitialisation réussie !");
             return ResponseEntity.ok("Mot de passe réinitialisé avec succès.");
         } else {
+            System.out.println("❌ Token invalide ou expiré.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token invalide ou expiré.");
         }
     }
 
 
 
+    //////////
 
 
-}
+        @Autowired
+        private UserService userService;
+
+        @GetMapping("/user/details")
+        public ResponseEntity<?> getUserDetails(@RequestParam String email) {
+            User user = userService.findByEmail(email);
+            if (user != null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("firstName", user.getFirstName());
+                response.put("lastName", user.getLastName());
+                response.put("role", user.getRole().name());
+
+                return ResponseEntity.ok(response);
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+
+
+
+
+

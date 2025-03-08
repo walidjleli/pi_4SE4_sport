@@ -20,10 +20,12 @@ public class Stats {
     private int minutesPlayed;
     private int interceptions;
     private int successfulPasses;
+
     @OneToOne
-    @JsonIgnore
+    @JsonIgnore  // Évite une récursion infinie dans la réponse JSON
     @JoinColumn(name = "user_id")
     private User player;
 
-
+    // Getters et setters générés par Lombok
 }
+

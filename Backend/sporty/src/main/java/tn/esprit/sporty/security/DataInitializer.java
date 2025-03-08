@@ -1,4 +1,4 @@
-package tn.esprit.sporty.config;
+package tn.esprit.sporty.security;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

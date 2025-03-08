@@ -30,14 +30,17 @@ public class StatsServiceImpl implements IStatService {
 
     @Override
     public List<Stats> getAllStatistics() {
+
         return statsRepository.findAll();
     }
     @Override
     public Optional<Stats> getStatisticsByUserId(Integer userId) {
+
         return statsRepository.findByUserId(userId);
     }
     @Override
-    public Optional<Stats> getStatisticsById(Integer id) {
+    public Optional<Stats> getStatisticsById(Integer id)
+    {
         return statsRepository.findById(id);
     }
 
