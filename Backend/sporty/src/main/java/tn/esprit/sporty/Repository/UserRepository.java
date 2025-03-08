@@ -12,6 +12,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByEmail(String email);
     Optional<User> findByResetToken(String resetToken);
 
+    // ✅ Trouver un utilisateur par token de réinitialisation
+
     Optional<User> findByRole(Role role);
 
     List<User> findAllById(Iterable<Integer> ids);

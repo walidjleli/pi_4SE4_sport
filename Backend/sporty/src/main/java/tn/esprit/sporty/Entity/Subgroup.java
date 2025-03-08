@@ -7,11 +7,12 @@ import lombok.*;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
+@NoArgsConstructor  // Lombok annotation generates the no-argument constructor
 @AllArgsConstructor
 @Entity
 @Table(name = "subgroup")
 public class Subgroup {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int subgroupId;
@@ -24,14 +25,14 @@ public class Subgroup {
             joinColumns = @JoinColumn(name = "subgroup_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> users;  // ✅ Only members from the same team should be here
+    private List<User> users;
 
     @ManyToMany
     private List<TrainingSession> trainingSessions;
 
     @ManyToOne
-    @JsonBackReference // Ignore this side during serialization
-
+    @JsonBackReference  // Prevent circular references during serialization
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
+
 }

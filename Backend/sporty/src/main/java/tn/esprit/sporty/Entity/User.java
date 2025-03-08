@@ -20,7 +20,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("id")  // Ensure correct mapping
+    @JsonProperty("id")
 
     private int id;
 
@@ -40,14 +40,13 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Status activationStatus = Status.OFF; // Default to OFF
-// Utilisé pour activer/désactiver l'utilisateur
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ManyToOne
     @JsonIgnore
-    @ManyToMany(mappedBy = "players", fetch = FetchType.EAGER)
-    private List<Team> teams = new ArrayList<>();
+    private Team team ;
 
 
     private String activationToken;
@@ -61,12 +60,12 @@ public class User {
 
 
     public void setRoleStatus(Status status) {
-        this.roleStatus=roleStatus;
+        this.roleStatus=status;
     }
 
     private String resetToken;
 
-    public boolean isPartOfTeam(int teamId) {
-        return this.teams.stream().anyMatch(team -> team.getTeamId() == teamId);
-    }
+
+
+
 }

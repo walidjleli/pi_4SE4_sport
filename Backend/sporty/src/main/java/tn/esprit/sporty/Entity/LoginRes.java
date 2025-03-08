@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public class LoginRes {
     private String email;
     private String token;
+    private String firstName;
+    private String role;
 }

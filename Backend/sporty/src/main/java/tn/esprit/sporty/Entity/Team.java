@@ -9,39 +9,49 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 @Setter
 @Getter
 @Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
-
 public class Team implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int teamId;
-    String teamName;
-    @JsonManagedReference // Serialize this side
+    private int teamId;
 
+    private String teamName;
+
+    @JsonManagedReference
     @OneToMany(mappedBy = "team")
-    List<Subgroup> subgroups;
+    private List<Subgroup> subgroups;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "team_user",
-            joinColumns = @JoinColumn(name = "team_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> players = new ArrayList<>();
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    private List<User> players ;
 
 
-    public List<User> getPlayers() {
-        return players;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "coach_id", unique = true)
+    private User coach;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "doctorId", unique = true)
+    private User doctor;
+
+    public void setCoach(User coach) {
+        if (coach != null && coach.getRole() != Role.COACH) {
+            throw new IllegalArgumentException("L'utilisateur sélectionné n'est pas un coach.");
+        }
+        this.coach = coach; // ✅ Permet de mettre `null` sans erreur
     }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "coach_id")
-    User coach;
+    public void setDoctor(User doctor) {
+        if (doctor != null && doctor.getRole() != Role.DOCTOR) {
+            throw new IllegalArgumentException("L'utilisateur sélectionné n'est pas un docteur.");
+        }
+        this.doctor = doctor; // ✅ Autoriser `null`
+    }
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "doctor_id")
-    User doctor;
+
+
 }
