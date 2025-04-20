@@ -3,8 +3,10 @@ package tn.esprit.sporty.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // ✅ Ajout pour les logs
 import org.springframework.stereotype.Service;
+import tn.esprit.sporty.Entity.Subgroup;
 import tn.esprit.sporty.Entity.Team;
 import tn.esprit.sporty.Entity.User;
+import tn.esprit.sporty.Repository.SubgroupRepository;
 import tn.esprit.sporty.Repository.TeamRepository;
 import tn.esprit.sporty.Repository.UserRepository;
 
@@ -19,6 +21,7 @@ public class teamServiceImpl implements IteamService {
 
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
+    private final SubgroupRepository subgroupRepository;
 
     public List<Team> getAllTeams() {
         List<Team> teams = teamRepository.findAll();
@@ -91,7 +94,7 @@ public class teamServiceImpl implements IteamService {
 
             // 🔥 Vérifier et retirer le coach
             if (team.getCoach() != null) {
-                team.setCoach(null);
+                team.setCoach(null);    
             }
 
             // 🔥 Vérifier et retirer le docteur
@@ -245,5 +248,14 @@ public class teamServiceImpl implements IteamService {
         log.info("🗑 Joueur ID={} retiré de l'équipe ID={}", playerId, teamId);
         return true;
     }
+
+    public List<User> getUsersBySubgroupId(int subgroupId) {
+        Optional<Subgroup> subgroupOpt = subgroupRepository.findById(subgroupId);
+        if (subgroupOpt.isEmpty()) {
+            throw new RuntimeException("Sous-groupe introuvable !");
+        }
+        return subgroupOpt.get().getPlayers(); // ou getUsers() selon ton modèle
+    }
+
 
 }

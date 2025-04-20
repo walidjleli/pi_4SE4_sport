@@ -5,5 +5,6 @@ import tn.esprit.sporty.Entity.User;
 public interface EmailService {
     public void sendActivationEmail(User user);
 
-    void sendSimpleMessage(String email, String subject, String message);
+    void sendSimpleMessage(String to, String subject, String text);
+    void sendAbsenceNotification(String email);
 }

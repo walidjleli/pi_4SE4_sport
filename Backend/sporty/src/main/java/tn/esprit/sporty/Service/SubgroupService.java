@@ -1,6 +1,11 @@
 package tn.esprit.sporty.Service;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.sporty.Entity.Subgroup;
 import tn.esprit.sporty.Entity.Team;
 import tn.esprit.sporty.Entity.User;
@@ -12,81 +17,157 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Setter
+@Getter
 @Service
-public class SubgroupService implements ISubgroupService {
+@RequiredArgsConstructor
+@Slf4j
+public class  SubgroupService implements ISubgroupService {
 
     private final SubgroupRepository subgroupRepository;
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
 
-    public SubgroupService(SubgroupRepository subgroupRepository, TeamRepository teamRepository, UserRepository userRepository) {
-        this.subgroupRepository = subgroupRepository;
-        this.teamRepository = teamRepository;
-        this.userRepository = userRepository;
-    }
-
-    public Subgroup createSubgroup(Subgroup subgroup) {
-        // Fetch the team with its players (eagerly)
-        Team team = teamRepository.findById(subgroup.getTeam().getTeamId())
-                .orElseThrow(() -> new IllegalArgumentException("Team not found!"));
-
-        // Fetch users from the database using their IDs
-        List<User> users = subgroup.getUsers().stream()
-                .map(user -> userRepository.findById(user.getId())
-                        .orElseThrow(() -> new IllegalArgumentException("User not found: " + user.getId())))
-                .collect(Collectors.toList());
-
-        // Validate users belong to the team
-        for (User user : users) {
-            if (!team.getPlayers().contains(user)) {
-                throw new IllegalArgumentException("User " + user.getId() + " is not part of the team!");
-            }
+    // ✅ Créer un sous-groupe à partir d'une équipe
+    @Override
+    public Subgroup createSubgroupFromTeam(int teamId, Subgroup subgroup) {
+        Optional<Team> teamOpt = teamRepository.findById(teamId);
+        if (teamOpt.isEmpty()) {
+            throw new RuntimeException("❌ Équipe introuvable !");
         }
 
-        // Update the subgroup with managed users
-        subgroup.setUsers(users);
-        subgroup.setTeam(team); // Ensure the subgroup references the managed team
+        Team team = teamOpt.get();
 
+        // Ajout d'une vérification pour le nom du sous-groupe
+        if (subgroupRepository.existsBySubgroupName(subgroup.getSubgroupName())) {
+            throw new RuntimeException("❌ Un sous-groupe avec ce nom existe déjà !");
+        }
+
+        subgroup.setTeam(team);
         return subgroupRepository.save(subgroup);
     }
 
+
+    public List<Subgroup> getSubgroupsByTeamId(int teamId) {
+        return subgroupRepository.findByTeam_TeamId( teamId);
+    }
+
+
+    // ✅ Récupérer tous les sous-groupes
     @Override
     public List<Subgroup> getAllSubgroups() {
         return subgroupRepository.findAll();
     }
 
+    // ✅ Récupérer un sous-groupe par ID
     @Override
     public Subgroup getSubgroupById(int id) {
         return subgroupRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Subgroup not found!"));
+                .orElseThrow(() -> new RuntimeException("❌ Sous-groupe introuvable !"));
     }
 
+    // ✅ Mettre à jour un sous-groupe
     @Override
-    public Subgroup updateSubgroup(int id, Subgroup subgroup) {
-        Optional<Subgroup> existingSubgroupOpt = subgroupRepository.findById(id);
-
-        if (existingSubgroupOpt.isPresent()) {
-            Subgroup existingSubgroup = existingSubgroupOpt.get();
-
-            // Ensure all users are from the same team
-            List<User> teamMembers = existingSubgroup.getTeam().getPlayers();
-            for (User user : subgroup.getUsers()) {
-                if (!teamMembers.contains(user)) {
-                    throw new IllegalArgumentException("User " + user.getEmail() + " is not part of the team!");
-                }
-            }
-
-            existingSubgroup.setSubgroupName(subgroup.getSubgroupName());
-            existingSubgroup.setUsers(subgroup.getUsers());
-
-            return subgroupRepository.save(existingSubgroup);
-        } else {
-            throw new IllegalArgumentException("Subgroup not found!");
+    public Subgroup updateSubgroup(int id, Subgroup subgroupDetails) {
+        Subgroup subgroup = getSubgroupById(id);
+        if (subgroupDetails.getSubgroupName() != null) {
+            subgroup.setSubgroupName(subgroupDetails.getSubgroupName());
         }
+        return subgroupRepository.save(subgroup);
     }
+
+    // ✅ Supprimer un sous-groupe
 
     @Override
     public void deleteSubgroup(int id) {
-        subgroupRepository.deleteById(id);
+        Optional<Subgroup> subgroupOpt = subgroupRepository.findById(id);
+        if (subgroupOpt.isEmpty()) {
+            throw new RuntimeException("Sous-groupe introuvable !");
+        }
+
+        Subgroup subgroup = subgroupOpt.get();
+
+        log.info("Tentative de suppression du sous-groupe ID={} nommé '{}'", id, subgroup.getSubgroupName());
+
+        try {
+            for (User player : subgroup.getPlayers()) {
+                player.setSubgroup(null);
+                userRepository.save(player);
+            }
+
+            subgroupRepository.delete(subgroup);
+            log.info("✅ Sous-groupe supprimé avec succès.");
+        } catch (Exception e) {
+            log.error("❌ Erreur lors de la suppression du sous-groupe ID={}", id, e);
+            throw e;  // Propager l'erreur pour la voir en front (code 500)
+        }
     }
+
+
+
+
+    // ✅ Affecter un joueur à un sous-groupe
+    @Override
+    public boolean assignPlayerToSubgroup(int subgroupId, int playerId) {
+        Optional<Subgroup> subgroupOpt = subgroupRepository.findById(subgroupId);
+        Optional<User> playerOpt = userRepository.findById(playerId);
+
+        if (subgroupOpt.isEmpty() || playerOpt.isEmpty()) {
+            throw new RuntimeException("Sous-groupe ou joueur introuvable !");
+        }
+
+        Subgroup subgroup = subgroupOpt.get();
+        User player = playerOpt.get();
+
+        // Vérifier si le joueur est déjà affecté à un sous-groupe de la même équipe
+        if (player.getSubgroup() != null && player.getSubgroup().getTeam().equals(subgroup.getTeam())) {
+            throw new RuntimeException("❌ Le joueur est déjà affecté à un autre sous-groupe de cette équipe !");
+        }
+
+        // Affecter le joueur au sous-groupe
+        player.setSubgroup(subgroup);
+        userRepository.save(player);
+        return true;
+    }
+    @Override
+    public List<User> findUsersWithoutSubgroup(int teamId) {
+        // Récupérer tous les utilisateurs de l'équipe
+        List<User> allUsers = userRepository.findByTeam_TeamId(teamId);
+
+        // Filtrer ceux qui n'ont pas de sous-groupe
+        return allUsers.stream()
+                .filter(user -> user.getSubgroup() == null)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> getUsersBySubgroupId(int subgroupId) {
+        Optional<Subgroup> subgroupOpt = subgroupRepository.findById(subgroupId);
+        if (subgroupOpt.isEmpty()) {
+            throw new RuntimeException("Sous-groupe introuvable !");
+        }
+        return subgroupOpt.get().getPlayers(); // ou getUsers() selon ton modèle
+    }
+    @Override
+    public void removeUserFromSubgroup(int subgroupId, int userId) {
+        Optional<Subgroup> subgroupOpt = subgroupRepository.findById(subgroupId);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (subgroupOpt.isEmpty() || userOpt.isEmpty()) {
+            throw new RuntimeException("❌ Sous-groupe ou utilisateur introuvable !");
+        }
+
+        User user = userOpt.get();
+
+        // Vérifie que le joueur appartient bien à ce sous-groupe
+        if (user.getSubgroup() == null || user.getSubgroup().getSubgroupId() != subgroupId) {
+            throw new RuntimeException("⚠️ L'utilisateur n'appartient pas à ce sous-groupe !");
+        }
+
+        user.setSubgroup(null);
+        userRepository.save(user);
+    }
+
+
+
 }

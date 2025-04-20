@@ -45,6 +45,15 @@ public class EmailServiceImpl implements EmailService {
         message.setText(text);
         emailSender.send(message);
     }
+    @Override
+    public void sendAbsenceNotification(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Absence à l'entraînement");
+        message.setText("Bonjour, vous avez été marqué absent à la dernière session. Merci de contacter le coach.");
+        mailSender.send(message);
+    }
+
 
 
 }

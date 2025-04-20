@@ -1,6 +1,7 @@
 package tn.esprit.sporty.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -44,9 +45,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @JsonBackReference
     @ManyToOne
-    @JsonIgnore
-    private Team team ;
+    @JoinColumn(name = "team_id")
+    private Team team;
 
 
     private String activationToken;
@@ -64,8 +66,15 @@ public class User {
     }
 
     private String resetToken;
+    @JsonIgnore
 
+    @ManyToOne
+    @JoinColumn(name = "subgroup_id")
+    private Subgroup subgroup;
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Attendance> attendances = new ArrayList<>();
 
 
 }

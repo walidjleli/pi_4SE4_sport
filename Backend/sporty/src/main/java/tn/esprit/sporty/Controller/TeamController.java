@@ -129,6 +129,14 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("⚠️ L'utilisateur sélectionné n'est pas un coach !");
         }
 
+        // 🚨 Libérer le coach de l'équipe précédente sans le supprimer
+        if (team.getCoach() != null) {
+            User previousCoach = team.getCoach();
+            previousCoach.setTeam(null);  // Dissocier le coach de l'équipe
+            userRepository.save(previousCoach);  // Sauvegarder les modifications dans la base de données
+            log.info("🆘 Coach ID={} libéré de l'équipe ID={}", previousCoach.getId(), teamId);
+        }
+
         // 🚨 Vérifier si ce coach est déjà assigné à une autre équipe
         List<Team> allTeams = teamService.getAllTeams();
         for (Team t : allTeams) {
@@ -137,12 +145,13 @@ public class TeamController {
             }
         }
 
-        // ✅ Affectation du coach
+        // Affectation du coach
         team.setCoach(coach);
         teamService.updateTeam(teamId, team);
 
         return ResponseEntity.ok("✅ Coach affecté avec succès !");
     }
+
 
 
 
@@ -177,6 +186,14 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("⚠️ L'utilisateur sélectionné n'est pas un docteur !");
         }
 
+        // 🚨 Libérer le docteur de l'équipe précédente sans le supprimer
+        if (team.getDoctor() != null) {
+            User previousDoctor = team.getDoctor();
+            previousDoctor.setTeam(null);  // Dissocier le docteur de l'équipe
+            userRepository.save(previousDoctor);  // Sauvegarder les modifications dans la base de données
+            log.info("🆘 Docteur ID={} libéré de l'équipe ID={}", previousDoctor.getId(), teamId);
+        }
+
         // 🚨 Vérification si le docteur est déjà affecté à une autre équipe
         List<Team> allTeams = teamService.getAllTeams();
         for (Team t : allTeams) {
@@ -186,7 +203,7 @@ public class TeamController {
             }
         }
 
-        // ✅ Affectation du docteur
+        // Affectation du docteur
         team.setDoctor(doctor);
         teamService.updateTeam(teamId, team);
         log.info("✅ Docteur ID={} affecté avec succès à l'équipe ID={}", doctorId, teamId);
