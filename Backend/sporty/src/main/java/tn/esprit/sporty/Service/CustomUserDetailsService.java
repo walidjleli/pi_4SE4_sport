@@ -10,6 +10,8 @@ import tn.esprit.sporty.Entity.Status;
 import tn.esprit.sporty.Entity.User;
 import tn.esprit.sporty.Repository.UserRepository;
 
+import java.util.List;
+
 @Service
 public class CustomUserDetailsService implements UserService {
 
@@ -71,6 +73,12 @@ public class CustomUserDetailsService implements UserService {
         }
     }
 
+    @Override
+    public List<User> findUsersWithoutSubgroup(int teamId) {
+        return List.of();
+    }
+
+
     public Role getUserRoleByEmail(String email) {
         User user = userRepository.findByEmail(email); // Assuming userRepository is available
         if (user != null) {
@@ -78,12 +86,6 @@ public class CustomUserDetailsService implements UserService {
         } else {
             return null;
         }
-
-
-
-
-
-
 
     }
 

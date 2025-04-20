@@ -19,6 +19,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findAllById(Iterable<Integer> ids);
 
 
+    List<User> findByTeam_TeamId(int teamId);
 
 }
 

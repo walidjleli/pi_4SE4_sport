@@ -1,9 +1,11 @@
 package tn.esprit.sporty.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,20 +21,18 @@ public class Subgroup {
 
     private String subgroupName;
 
-    @ManyToMany
-    @JoinTable(
-            name = "subgroup_users",
-            joinColumns = @JoinColumn(name = "subgroup_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> users;
+    @OneToMany(mappedBy = "subgroup", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User> players;
 
-    @ManyToMany
+    @JsonIgnore
+    @ManyToMany(mappedBy = "subgroups")
     private List<TrainingSession> trainingSessions;
 
+
+    @JsonBackReference
     @ManyToOne
-    @JsonBackReference  // Prevent circular references during serialization
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id", nullable = false) // Vérifiez si nullable peut être `true`
     private Team team;
+
 
 }

@@ -25,16 +25,18 @@ public class Team implements Serializable {
     @OneToMany(mappedBy = "team")
     private List<Subgroup> subgroups;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private List<User> players ;
+    private List<User> players;
 
 
-
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "coach_id", unique = true)
     private User coach;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "doctorId", unique = true)
     private User doctor;
 
