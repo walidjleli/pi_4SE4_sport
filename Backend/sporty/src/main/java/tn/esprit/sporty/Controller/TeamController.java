@@ -2,25 +2,31 @@ package tn.esprit.sporty.Controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // ✅ Ajout pour le logging
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.sporty.Entity.Role;
+import tn.esprit.sporty.Entity.Subgroup;
 import tn.esprit.sporty.Entity.Team;
 import tn.esprit.sporty.Entity.User;
+import tn.esprit.sporty.Repository.SubgroupRepository;
 import tn.esprit.sporty.Repository.UserRepository;
 import tn.esprit.sporty.Service.IteamService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin( "*")
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/RestTeam")
 @RequiredArgsConstructor
 @Slf4j // ✅ Ajout du logger
 public class TeamController {
+    @Autowired
+    private SubgroupRepository subgroupRepository;
 
     private final IteamService teamService;
     private final UserRepository userRepository;
@@ -50,9 +56,34 @@ public class TeamController {
     @PostMapping("/addteam")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         log.info("📥 Nouvelle équipe reçue : {}", team.getTeamName());
+
+        // Sauvegarder l’équipe sans sous-groupes d’abord
         Team savedTeam = teamService.createTeam(team);
+
+        // Créer les sous-groupes par défaut
+        Subgroup defenseGroup = new Subgroup();
+        defenseGroup.setSubgroupName("Défense");
+        defenseGroup.setTeam(savedTeam);
+        defenseGroup.setPlayers(new ArrayList<>());
+
+        Subgroup attackGroup = new Subgroup();
+        attackGroup.setSubgroupName("Attaque");
+        attackGroup.setTeam(savedTeam);
+        attackGroup.setPlayers(new ArrayList<>());
+
+        // Sauvegarder les sous-groupes
+        List<Subgroup> subgroups = new ArrayList<>();
+        subgroups.add(defenseGroup);
+        subgroups.add(attackGroup);
+
+        savedTeam.setSubgroups(subgroups);
+
+        subgroupRepository.saveAll(subgroups);
+        teamService.updateTeam(savedTeam.getTeamId(), savedTeam);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTeam);
     }
+
 
     // ✅ Mettre à jour une équipe
     @PutMapping("/{id}")
@@ -93,14 +124,46 @@ public class TeamController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("⚠️ Ce joueur est déjà dans une autre équipe !");
         }
 
-        team.getPlayers().add(player);
+        // ✅ Affecter l'équipe au joueur
         player.setTeam(team);
-        userRepository.save(player);  // 🔥 Mettre à jour l'utilisateur
-        teamService.updateTeam(teamId, team);
+        userRepository.save(player); // Sauvegarder l'utilisateur mis à jour
 
-        log.info("✅ Joueur ID={} ajouté à l'équipe ID={}", playerId, teamId);
+        team.getPlayers().add(player);
+        teamService.updateTeam(teamId, team); // Mettre à jour l'équipe
+
+        // 🎯 Affectation automatique au bon sous-groupe
+        List<Subgroup> subgroups = team.getSubgroups(); // Récupération des sous-groupes de l'équipe
+        Subgroup targetGroup = null;
+
+        switch (player.getPoste()) {
+            case GARDIEN:
+            case DEFENSEUR:
+                targetGroup = subgroups.stream()
+                        .filter(sg -> sg.getSubgroupName().equalsIgnoreCase("Défense"))
+                        .findFirst().orElse(null);
+                break;
+            case MILIEU:
+            case ATTAQUANT:
+                targetGroup = subgroups.stream()
+                        .filter(sg -> sg.getSubgroupName().equalsIgnoreCase("Attaque"))
+                        .findFirst().orElse(null);
+                break;
+        }
+
+        if (targetGroup != null) {
+            player.setSubgroup(targetGroup);
+            targetGroup.getPlayers().add(player);
+            subgroupRepository.save(targetGroup);
+            userRepository.save(player); // Sauvegarder à nouveau pour lier le sous-groupe
+        }
+
+        log.info("✅ Joueur ID={} ajouté à l'équipe ID={} et au sous-groupe {}",
+                player.getId(), team.getTeamId(),
+                targetGroup != null ? targetGroup.getSubgroupName() : "aucun");
+
         return ResponseEntity.ok(team);
     }
+
 
 
 

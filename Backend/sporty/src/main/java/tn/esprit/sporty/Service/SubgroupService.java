@@ -4,16 +4,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import tn.esprit.sporty.Entity.Subgroup;
 import tn.esprit.sporty.Entity.Team;
+import tn.esprit.sporty.Entity.TrainingSession;
 import tn.esprit.sporty.Entity.User;
 import tn.esprit.sporty.Repository.SubgroupRepository;
 import tn.esprit.sporty.Repository.TeamRepository;
 import tn.esprit.sporty.Repository.UserRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -77,32 +82,32 @@ public class  SubgroupService implements ISubgroupService {
     }
 
     // ✅ Supprimer un sous-groupe
-
+    @Transactional
     @Override
     public void deleteSubgroup(int id) {
-        Optional<Subgroup> subgroupOpt = subgroupRepository.findById(id);
-        if (subgroupOpt.isEmpty()) {
-            throw new RuntimeException("Sous-groupe introuvable !");
-        }
+        Subgroup subgroup = subgroupRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("❌ Sous-groupe introuvable !"));
 
-        Subgroup subgroup = subgroupOpt.get();
-
-        log.info("Tentative de suppression du sous-groupe ID={} nommé '{}'", id, subgroup.getSubgroupName());
-
-        try {
-            for (User player : subgroup.getPlayers()) {
-                player.setSubgroup(null);
-                userRepository.save(player);
+        // 🔓 Libérer les joueurs
+        if (subgroup.getPlayers() != null && !subgroup.getPlayers().isEmpty()) {
+            for (User user : subgroup.getPlayers()) {
+                user.setSubgroup(null);
+                userRepository.save(user);
             }
-
-            subgroupRepository.delete(subgroup);
-            log.info("✅ Sous-groupe supprimé avec succès.");
-        } catch (Exception e) {
-            log.error("❌ Erreur lors de la suppression du sous-groupe ID={}", id, e);
-            throw e;  // Propager l'erreur pour la voir en front (code 500)
+            subgroup.getPlayers().clear();
         }
-    }
 
+        // 🔓 Supprimer les relations avec TrainingSession
+        if (subgroup.getTrainingSessions() != null && !subgroup.getTrainingSessions().isEmpty()) {
+            for (TrainingSession session : subgroup.getTrainingSessions()) {
+                session.getSubgroups().remove(subgroup);
+            }
+            subgroup.getTrainingSessions().clear();
+        }
+
+        // ✅ Maintenant supprimer
+        subgroupRepository.delete(subgroup);
+    }
 
 
 
@@ -168,6 +173,17 @@ public class  SubgroupService implements ISubgroupService {
         userRepository.save(user);
     }
 
+    public List<Map<String, Object>> getAllSubgroupsWithTeamName() {
+        return subgroupRepository.findAll().stream()
+                .map(sg -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("subgroupId", sg.getSubgroupId());
+                    map.put("subgroupName", sg.getSubgroupName());
+                    map.put("teamName", sg.getTeam() != null ? sg.getTeam().getTeamName() : null);
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
 
 
 }

@@ -1,5 +1,8 @@
 package tn.esprit.sporty.Service;
 
+import jakarta.mail.internet.MimeMessage;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import tn.esprit.sporty.Entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -54,6 +57,23 @@ public class EmailServiceImpl implements EmailService {
         mailSender.send(message);
     }
 
+
+    public void sendEmailWithCalendar(String to, String subject, String body, String icalContent) {
+        try {
+            MimeMessage message = emailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(body);
+
+            helper.addAttachment("invitation.ics", new ByteArrayResource(icalContent.getBytes()), "text/calendar");
+
+            emailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de l’envoi de l’e-mail à " + to, e);
+        }
+    }
 
 
 }

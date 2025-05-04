@@ -4,6 +4,7 @@ import tn.esprit.sporty.Entity.Subgroup;
 import tn.esprit.sporty.Entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ISubgroupService {
     Subgroup createSubgroupFromTeam(int teamId, Subgroup subgroup);
@@ -18,5 +19,6 @@ public interface ISubgroupService {
     List<User> findUsersWithoutSubgroup(int teamId);
     List<User> getUsersBySubgroupId(int subgroupId);
     void removeUserFromSubgroup(int subgroupId, int userId);
+    List<Map<String, Object>> getAllSubgroupsWithTeamName();
 
 }

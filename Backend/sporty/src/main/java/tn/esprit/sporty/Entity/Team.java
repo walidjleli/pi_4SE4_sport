@@ -21,9 +21,10 @@ public class Team implements Serializable {
 
     private String teamName;
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "team")
+    @JsonManagedReference
     private List<Subgroup> subgroups;
+
 
     @JsonManagedReference
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)

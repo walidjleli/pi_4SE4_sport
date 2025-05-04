@@ -62,9 +62,14 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/trainingsessions/send-absence-email").permitAll()
                         .requestMatchers("/api/subgroups/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/trainingsessions/api/subgroups/{subgroupId}/users").permitAll()
-
-
-
+                        .requestMatchers("/api/pushups/submit/**").permitAll()
+                        .requestMatchers("/api/pushups/leaderboard").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/rest/auth/*/setPoste").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ia/recommend/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/rest/auth/users/players").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/subgroups/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/subgroups/with-teams").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/trainingsessions/**  ").permitAll()
 
                         .anyRequest().authenticated()
                 )
