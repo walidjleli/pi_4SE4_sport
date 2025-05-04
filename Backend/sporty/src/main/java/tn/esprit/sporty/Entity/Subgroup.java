@@ -29,10 +29,11 @@ public class Subgroup {
     private List<TrainingSession> trainingSessions;
 
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "team_id", nullable = false)
     @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "team_id", nullable = false) // Vérifiez si nullable peut être `true`
     private Team team;
+
 
 
 }

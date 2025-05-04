@@ -34,9 +34,10 @@ public class CustomUserDetailsService implements UserService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole().name())  // Utiliser le nom du rôle
+                .roles(user.getRole().name())// Utiliser le nom du rôle
                 .build();
     }
+
     /////////////////////////////////////////////////
     public void createUser(User user) {
         User existingUser = userRepository.findByEmail(user.getEmail());

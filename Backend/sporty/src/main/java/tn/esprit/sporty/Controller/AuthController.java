@@ -19,10 +19,7 @@ import tn.esprit.sporty.Service.ResetPasswordService;
 import tn.esprit.sporty.Service.CustomUserDetailsService;
 import tn.esprit.sporty.Entity.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/rest/auth")
@@ -70,7 +67,7 @@ public class AuthController {
             System.out.println("Token generated: " + token);
 
             // ✅ Match the new constructor
-            LoginRes loginRes = new LoginRes(user.getEmail(), token, user.getFirstName(), user.getRole().name());
+            LoginRes loginRes = new LoginRes(user.getEmail(), token, user.getFirstName(), user.getRole().name(), user);
 
             return ResponseEntity.ok(loginRes);
 
@@ -254,7 +251,38 @@ public class AuthController {
             }
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
+
+
+    @PutMapping("/{userId}/setPoste")
+    public ResponseEntity<?> setPoste(@PathVariable int userId, @RequestBody Map<String, String> payload) {
+        String posteStr = payload.get("poste"); // ex: "MILIEU"
+
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Utilisateur introuvable.");
+        }
+
+        try {
+            Poste poste = Poste.valueOf(posteStr.toUpperCase()); // convertit en enum
+            User user = userOpt.get();
+            user.setPoste(poste);
+            userRepository.save(user);
+            return ResponseEntity.ok("✅ Poste mis à jour !");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("❌ Poste invalide !");
+        }
     }
+
+    @GetMapping("/users/players")
+    public ResponseEntity<List<User>> getAllPlayers() {
+        List<User> players = userRepository.findAll()
+                .stream()
+                .filter(user -> user.getRole() == Role.PLAYER)
+                .toList();
+        return ResponseEntity.ok(players);
+    }
+
+}
 
 
 

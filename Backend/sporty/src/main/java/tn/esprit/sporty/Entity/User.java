@@ -49,7 +49,8 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "team_id")
     private Team team;
-
+    @OneToOne
+    PushupResult pushupResult;
 
     private String activationToken;
 
@@ -72,9 +73,13 @@ public class User {
     @JoinColumn(name = "subgroup_id")
     private Subgroup subgroup;
 
+
     @OneToMany(mappedBy = "user")
     @JsonIgnore
     private List<Attendance> attendances = new ArrayList<>();
 
+
+    @Enumerated(EnumType.STRING)
+    private Poste poste;
 
 }

@@ -13,4 +13,7 @@ public class LoginRes {
     private String token;
     private String firstName;
     private String role;
+    private User user;
+
+
 }

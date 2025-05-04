@@ -21,6 +21,8 @@ public class TrainingSessionService {
     private final UserRepository userRepository;
     private final AttendanceRepository attendanceRepository;
     private final SubgroupRepository subgroupRepository;
+    private final EmailServiceImpl emailService;
+
 
     // ✅ Créer une session
     public TrainingSession createSession(TrainingSession session) {
@@ -69,8 +71,24 @@ public class TrainingSessionService {
 
         // Sauvegarde des deux
         subgroupRepository.save(subgroup);
-        return trainingSessionRepository.save(session);
+        trainingSessionRepository.save(session);
+
+        // Génère le contenu iCalendar
+        String icalContent = CalendarUtils.buildICalendarContent(session);
+
+        // Envoie l’email avec pièce jointe aux utilisateurs
+        subgroup.getPlayers().forEach(user -> {
+            emailService.sendEmailWithCalendar(
+                    user.getEmail(),
+                    "Nouvelle session d’entraînement : " + session.getName(),
+                    "Bonjour " + user.getFirstName() + ",\n\nVoici l’invitation pour la session d’entraînement.",
+                    icalContent
+            );
+        });
+
+        return session;
     }
+
 
 
 

@@ -4,10 +4,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.sporty.Entity.Attendance;
-import tn.esprit.sporty.Entity.Subgroup;
-import tn.esprit.sporty.Entity.TrainingSession;
-import tn.esprit.sporty.Entity.User;
+import tn.esprit.sporty.Entity.*;
 import tn.esprit.sporty.Service.EmailService;
 import tn.esprit.sporty.Service.SubgroupService;
 import tn.esprit.sporty.Service.TrainingSessionService;
@@ -32,6 +29,11 @@ public class TrainingSessionController {
     public ResponseEntity<TrainingSession> createSession(@RequestBody TrainingSession session) {
         TrainingSession createdSession = trainingSessionService.createSession(session);
         return ResponseEntity.ok(createdSession);
+    }
+    @GetMapping("/getAll")
+    public ResponseEntity<List<TrainingSession>> getAllTeams() {
+        List<TrainingSession> teams = trainingSessionService.getAllSessions();
+        return ResponseEntity.ok(teams);
     }
 
     // ✅ Marquer la présence

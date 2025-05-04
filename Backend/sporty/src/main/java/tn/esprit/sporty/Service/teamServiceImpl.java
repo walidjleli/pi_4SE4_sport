@@ -3,8 +3,10 @@ package tn.esprit.sporty.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j; // ✅ Ajout pour les logs
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tn.esprit.sporty.Entity.Subgroup;
 import tn.esprit.sporty.Entity.Team;
+import tn.esprit.sporty.Entity.TrainingSession;
 import tn.esprit.sporty.Entity.User;
 import tn.esprit.sporty.Repository.SubgroupRepository;
 import tn.esprit.sporty.Repository.TeamRepository;
@@ -73,48 +75,60 @@ public class teamServiceImpl implements IteamService {
                 }).orElse(null);
     }
 
+
     @Override
     public boolean deleteTeam(int id) {
-        try {
-            Optional<Team> teamOpt = teamRepository.findById(id);
+        Optional<Team> teamOpt = teamRepository.findById(id);
 
-            if (teamOpt.isEmpty()) {
-                log.warn("❌ Échec de suppression, équipe ID={} introuvable", id);
-                return false;
-            }
-
-            Team team = teamOpt.get();
-
-            // 🔥 Dissocier les joueurs avant suppression
-            for (User player : team.getPlayers()) {
-                player.setTeam(null);
-                userRepository.save(player);
-            }
-            team.getPlayers().clear();
-
-            // 🔥 Vérifier et retirer le coach
-            if (team.getCoach() != null) {
-                team.setCoach(null);    
-            }
-
-            // 🔥 Vérifier et retirer le docteur
-            if (team.getDoctor() != null) {
-                team.setDoctor(null);
-            }
-
-            // 🔥 Sauvegarder les modifications avant suppression
-            teamRepository.save(team);
-
-            // 🔥 Supprimer l'équipe après nettoyage
-            log.info("🗑 Suppression de l'équipe ID={}", id);
-            teamRepository.deleteById(id);
-            return true;
-
-        } catch (Exception e) {
-            log.error("❌ ERREUR lors de la suppression de l'équipe ID={} : {}", id, e.getMessage(), e);
+        if (teamOpt.isEmpty()) {
+            log.warn("❌ Échec de suppression, équipe ID={} introuvable", id);
             return false;
         }
+
+        Team team = teamOpt.get();
+
+        // 🔥 Libérer les joueurs
+        for (User player : team.getPlayers()) {
+            player.setTeam(null);
+            player.setSubgroup(null); // <<< libérer aussi du sous-groupe
+            userRepository.save(player);
+        }
+        team.getPlayers().clear();
+
+        // 🔥 Supprimer les sous-groupes
+        for (Subgroup subgroup : team.getSubgroups()) {
+            // Libérer les joueurs du sous-groupe
+            for (User user : subgroup.getPlayers()) {
+                user.setSubgroup(null);
+                userRepository.save(user);
+            }
+            subgroup.getPlayers().clear();
+
+            // Retirer les sous-groupes des sessions d’entraînement
+            for (TrainingSession session : subgroup.getTrainingSessions()) {
+                session.getSubgroups().remove(subgroup);
+            }
+            subgroup.getTrainingSessions().clear();
+
+            subgroupRepository.delete(subgroup);
+        }
+        team.getSubgroups().clear();
+
+        // 🔥 Libérer coach et docteur
+        if (team.getCoach() != null) team.setCoach(null);
+        if (team.getDoctor() != null) team.setDoctor(null);
+
+        teamRepository.save(team);
+
+        // 🔥 Supprimer l’équipe
+        teamRepository.deleteById(id);
+        log.info("✅ Équipe ID={} supprimée avec succès.", id);
+
+        return true;
     }
+
+
+
 
 
 
