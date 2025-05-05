@@ -50,6 +50,13 @@ import { ShopDetailsComponent } from './shop-details/shop-details.component';
 import { WishlistComponent } from './wishlist/wishlist.component';
 import { ChatComponent } from './chat/chat.component';
 import { ShoePricePredictionComponent } from './shoe-price-prediction/shoe-price-prediction.component';
+import { CrudHealthComponent } from './FrontOffice/Health/crud-health/crud-health.component';
+import { HealthMainComponent } from './BackOffice/health/health-main/health-main.component';
+
+import { RecaptchaModule } from 'ng-recaptcha';
+import { NgxCaptchaModule } from 'ngx-captcha';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -89,6 +96,8 @@ import { ShoePricePredictionComponent } from './shoe-price-prediction/shoe-price
     WishlistComponent,
     ChatComponent,
     ShoePricePredictionComponent,
+    CrudHealthComponent,
+    HealthMainComponent,
 
   ],
   imports: [
@@ -98,7 +107,9 @@ import { ShoePricePredictionComponent } from './shoe-price-prediction/shoe-price
     FormsModule ,
     ToastrModule.forRoot() ,
     BrowserAnimationsModule,
+    NgxCaptchaModule,
     ReactiveFormsModule,
+    RecaptchaModule
   ],
   providers: [
     TeamService,
