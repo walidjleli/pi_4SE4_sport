@@ -10,9 +10,10 @@
                 <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
             </div>
             <div class="ms-3">
-                <h6 class="mb-0">Jhon Doe</h6>
-                <span>Admin</span>
+                <h6 class="mb-0">{{ userFirstName }}</h6>
+                <span>{{ userRole | titlecase }}</span>
             </div>
+            
         </div>
         <div class="navbar-nav w-100">
             <a routerLink="/back-office" class="nav-item nav-link active">
@@ -42,12 +43,25 @@
             </a>
             
             <!-- ✅ Ajout du lien pour la gestion des équipes -->
+            <li class="nav-item">
+               
+            <ul>
             <a routerLink="/back-office/teams" class="nav-item nav-link">
-                <i class="fa fa-users me-2"></i>Gestion des équipes
+                <i class="fa fa-users me-2"></i>Team management
             </a>
+            <a routerLink="/back-office/subgroups" class="nav-item nav-link">
+                <i class="fa fa-chart-line me-2"></i>Subgroups management
+            </a>
+            <a routerLink="/back-office/training" class="nav-item nav-link">
+                <i class="fa fa-chart-line me-2"></i>TrainingSession management
+            </a>
+        
+            
             <a routerLink="/back-office/add-stats" class="nav-item nav-link">
-                <i class="fa fa-chart-line me-2"></i>Ajouter Statistiques
+                <i class="fa fa-chart-line me-2"></i>Statistics management
             </a>
+            </ul>
+        </li>
 
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">

@@ -1,0 +1,83 @@
+<div class="subgroup-management-container">
+  <h2>Gestion des sous-groupes</h2>
+
+  <!-- Sélection de l'équipe -->
+  <div class="select-team">
+    <label for="teamSelect">Sélectionner l'équipe:</label>
+    <select id="teamSelect" [(ngModel)]="selectedTeam" (change)="loadSubgroups()">
+      <option *ngFor="let team of teams" [ngValue]="team">{{ team.teamName }}</option>
+    </select>
+  </div>
+
+  <!-- Liste des sous-groupes -->
+  <div *ngIf="selectedTeam">
+    <h3>Sous-groupes de l'équipe : {{ selectedTeam.teamName }}</h3>
+
+    <ul class="subgroup-list">
+      <li *ngFor="let subgroup of subgroups" class="subgroup-item">
+        <!-- Nom du sous-groupe + actions -->
+        <div class="subgroup-header">
+          <span class="subgroup-title">{{ subgroup.subgroupName }}</span>
+          <div class="subgroup-actions">
+            <button (click)="openUserManagement(subgroup)" class="manage-button">Gérer</button>
+            <button *ngIf="!subgroupIdToDelete" (click)="confirmDelete(subgroup.subgroupId!)" class="delete-button">
+              Supprimer
+            </button>
+          </div>
+        </div>
+
+        <!-- Liste des utilisateurs affectés -->
+        <div *ngIf="selectedSubgroup?.subgroupId === subgroup.subgroupId">
+          <h4>Utilisateurs affectés :</h4>
+          <ul *ngIf="subgroupUsers.length > 0; else noUsersAffected">
+            <li *ngFor="let user of subgroupUsers">
+              {{ user.firstName }} {{ user.lastName }}
+              <button (click)="removeUserFromSubgroup(user, selectedSubgroup?.subgroupId)" class="remove-button">
+                ❌ Retirer
+              </button>
+            </li>
+          </ul>
+          <ng-template #noUsersAffected>
+            <p>Aucun utilisateur affecté à ce sous-groupe.</p>
+          </ng-template>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Confirmation suppression -->
+    <div *ngIf="subgroupIdToDelete" class="confirmation-dialog">
+      <p>Êtes-vous sûr de vouloir supprimer ce sous-groupe ?</p>
+      <button (click)="deleteSubgroup(subgroupIdToDelete!)" class="confirm-button">Oui</button>
+      <button (click)="cancelDelete()" class="cancel-button">Annuler</button>
+    </div>
+
+    <!-- Ajout d'utilisateur -->
+    <div *ngIf="selectedSubgroup">
+      <h3>Ajouter des utilisateurs au sous-groupe : {{ selectedSubgroup.subgroupName }}</h3>
+      <div *ngIf="usersWithoutSubgroup.length > 0; else noAvailableUsers">
+        <ul>
+          <li *ngFor="let user of usersWithoutSubgroup">
+            {{ user.firstName }} {{ user.lastName }}
+            <button (click)="addUserToSubgroup(user)" class="add-button">Ajouter</button>
+          </li>
+        </ul>
+      </div>
+      <ng-template #noAvailableUsers>
+        <p>Aucun utilisateur disponible à ajouter pour ce sous-groupe.</p>
+      </ng-template>
+    </div>
+
+    <!-- Création sous-groupe -->
+    <div class="create-subgroup">
+      <input type="text" [(ngModel)]="newSubgroupName" placeholder="Nom du sous-groupe" class="subgroup-input">
+      <button (click)="createSubgroup()" [disabled]="!newSubgroupName" class="create-button">
+        Créer un sous-groupe
+      </button>
+    </div>
+
+    <!-- Erreurs -->
+    <div *ngIf="errorMessage" class="error-message">
+      <p>{{ errorMessage }}</p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<h2>Shop Details</h2>
+
+<div *ngIf="shopDetails">
+  <!-- Shop Information -->
+  <h3>{{ shopDetails.nom }}</h3>
+  <p><strong>Location:</strong> {{ shopDetails.location }}</p>
+  <p><strong>Contact Number:</strong> {{ shopDetails.contactNumber }}</p>
+  <p><strong>Email:</strong> {{ shopDetails.email }}</p>
+  <p><strong>Opening Hours:</strong> {{ shopDetails.openingHours }}</p>
+  <p><strong>Closing Hours:</strong> {{ shopDetails.closinghours }}</p>
+  <p><strong>Description:</strong> {{ shopDetails.description }}</p>
+  <p><strong>Category:</strong> {{ shopDetails.categorie }}</p>
+
+  <!-- List of Products -->
+  <h4>Products Available:</h4>
+  <div *ngFor="let product of shopDetails.productList" class="product-card">
+    <div class="product-header">
+      <h5>{{ product.productName }}</h5>
+      <p class="product-brand">{{ product.brand }}</p>
+    </div>
+    <div class="product-body">
+      <p><strong>Description:</strong> {{ product.description }}</p>
+      <p><strong>Price:</strong> {{ product.price }}$</p>
+      <p><strong>Stock Quantity:</strong> {{ product.stockquantity }}</p>
+      <p><strong>Creation Date:</strong> {{ product.creationDate }}</p>
+      <p><strong>Category:</strong> {{ product.footballProductsCategory }}</p>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!shopDetails">
+  <p>Loading shop details...</p>
+</div>

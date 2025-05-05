@@ -25,15 +25,29 @@ export class AuthService {
   login(credentials: { email: string; password: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/login`, credentials, this.httpOptions).pipe(
       tap((response: any) => {
-        if (response.token && response.role) { // 🔥 Vérifier si le rôle est bien renvoyé
+        if (response.token && response.role && response.user) {
           this.setToken(response.token);
           this.setUserRole(response.role);
           this.setFirstName(response.firstName);
+  
+          // ✅ Corrigé : stocker un objet user complet avec l'ID
+          const fullUser = {
+            id: response.user.id,
+            email: response.user.email,
+            firstName: response.user.firstName,
+            role: response.user.role
+          };
+          localStorage.setItem('user', JSON.stringify(fullUser));
+  
           this.redirectUser(response.role);
+        } else {
+          console.warn("❌ Données incomplètes dans la réponse de login :", response);
         }
       })
     );
   }
+  
+  
 
   /** ✅ Store token in localStorage */
   setToken(token: string): void {
@@ -99,6 +113,16 @@ export class AuthService {
   });
 }
 
-  
+
+
+isFan(): boolean {
+  const role = localStorage.getItem('role'); // ou selon ton système
+  return role === 'FAN';
+}
+
+getCurrentUser(): any {
+  const user = localStorage.getItem('user');
+  return user ? JSON.parse(user) : null;
+}
 
 }

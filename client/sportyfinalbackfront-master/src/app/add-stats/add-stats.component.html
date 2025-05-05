@@ -1,50 +1,66 @@
 <div class="container mt-4">
-  <h2 class="text-center mb-4">Ajouter des Statistiques</h2>
+  <h2 class="text-center mb-4">Ajouter ou Modifier des Statistiques</h2>
 
   <!-- Sélection du joueur -->
   <div class="mb-3">
     <label for="playerSelect" class="form-label fw-bold">Sélectionner un joueur :</label>
     <select id="playerSelect" class="form-select" (change)="onPlayerSelected($event)">
+      <option value="">-- Choisir un joueur --</option>
       <option *ngFor="let player of players" [value]="player.id">
         {{ player.firstName }} {{ player.lastName }} ({{ player.email }})
       </option>
     </select>
   </div>
 
+  <!-- Carte d'infos du joueur -->
+  <div *ngIf="userId" class="card border-primary mb-4 shadow">
+    <div class="card-header bg-primary text-white">
+      Informations du joueur sélectionné
+    </div>
+    <div class="card-body">
+      <p><strong>Nom :</strong> {{ selectedPlayer?.firstName }} {{ selectedPlayer?.lastName }}</p>
+      <p><strong>Email :</strong> {{ selectedPlayer?.email }}</p>
+      <div *ngIf="hasExistingStats; else noStats">
+        <p class="text-success"><i class="bi bi-check-circle-fill"></i> Statistiques existantes trouvées. Vous pouvez les modifier.</p>
+      </div>
+      <ng-template #noStats>
+        <p class="text-muted"><i class="bi bi-info-circle"></i> Aucune statistique encore enregistrée.</p>
+      </ng-template>
+    </div>
+  </div>
+
   <!-- Formulaire des statistiques -->
-  <div class="row g-3">
-    <div class="col-md-6">
-      <label class="form-label fw-bold">Buts marqués :</label>
-      <input type="number" class="form-control" [(ngModel)]="stats.goalsScored" min="0">
+  <form *ngIf="userId">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Buts marqués :</label>
+        <input type="number" class="form-control" [(ngModel)]="stats.goalsScored" name="goalsScored" min="0">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Passes décisives :</label>
+        <input type="number" class="form-control" [(ngModel)]="stats.assists" name="assists" min="0">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Minutes jouées :</label>
+        <input type="number" class="form-control" [(ngModel)]="stats.minutesPlayed" name="minutesPlayed" min="0">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Interceptions :</label>
+        <input type="number" class="form-control" [(ngModel)]="stats.interceptions" name="interceptions" min="0">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label fw-bold">Passes réussies :</label>
+        <input type="number" class="form-control" [(ngModel)]="stats.successfulPasses" name="successfulPasses" min="0">
+      </div>
     </div>
 
-    <div class="col-md-6">
-      <label class="form-label fw-bold">Passes décisives :</label>
-      <input type="number" class="form-control" [(ngModel)]="stats.assists" min="0">
+    <!-- Bouton d'envoi -->
+    <div class="text-center mt-4">
+      <button class="btn btn-primary btn-lg px-4" (click)="onSubmit()" type="button">
+        <i class="bi bi-check-circle"></i> Enregistrer Statistiques
+      </button>
     </div>
-
-    <div class="col-md-6">
-      <label class="form-label fw-bold">Minutes jouées :</label>
-      <input type="number" class="form-control" [(ngModel)]="stats.minutesPlayed" min="0">
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label fw-bold">Interceptions :</label>
-      <input type="number" class="form-control" [(ngModel)]="stats.interceptions" min="0">
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label fw-bold">Passes réussies :</label>
-      <input type="number" class="form-control" [(ngModel)]="stats.successfulPasses" min="0">
-    </div>
-  </div>
-
-  <!-- Bouton d'envoi -->
-  <div class="text-center mt-4">
-    <button class="btn btn-primary btn-lg px-4" (click)="onSubmit()">
-      <i class="bi bi-check-circle"></i> Ajouter Statistiques
-    </button>
-  </div>
+  </form>
 
   <!-- Message de succès ou d'erreur -->
   <p *ngIf="message" class="text-center mt-3" [ngClass]="{'alert alert-success': success, 'alert alert-danger': !success}">

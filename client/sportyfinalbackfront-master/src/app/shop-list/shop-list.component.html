@@ -1,0 +1,43 @@
+<div class="container">
+    <h2>Shop List</h2>
+  
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Location</th>
+          <th>Contact Number</th>
+          <th>Email</th>
+          <th>Category</th>
+          <th>Opening Hours</th>
+          <th>Closing Hours</th>
+          <th>Description</th>
+          <th>Actions</th> <!-- New column for actions (edit/delete) -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let shop of shops">
+          <td>{{ shop.idShop }}</td>
+          <td>{{ shop.nom }}</td>
+          <td>{{ shop.location }}</td>
+          <td>{{ shop.contactNumber }}</td>
+          <td>{{ shop.email }}</td>
+          <td>{{ shop.categorie }}</td> <!-- Display category as string -->
+          <td>{{ shop.openingHours }}</td> <!-- Display opening hours -->
+          <td>{{ shop.closinghours }}</td> <!-- Display closing hours -->
+          <td>{{ shop.description }}</td> <!-- Display description -->
+          <td>
+            <!-- Buttons for Edit and Delete -->
+            <button class="btn btn-primary" (click)="editShop(shop.idShop)">Edit</button>
+            <button class="btn btn-danger" (click)="deleteShop(shop.idShop)">Delete</button>
+            <button class="btn btn-info" (click)="viewShopDetails(shop.idShop)">Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <!-- Button to add a new shop -->
+    <button class="btn btn-success" (click)="addShop()">Add New Shop</button>
+  </div>
+  

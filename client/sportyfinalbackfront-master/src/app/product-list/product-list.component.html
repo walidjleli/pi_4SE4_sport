@@ -1,0 +1,171 @@
+<div class="container mt-4">
+  <h2>Product List</h2>
+    <!-- Search Bar -->
+    <div class="search-container mb-3">
+      <label for="searchQuery">Search by Product Name:</label>
+      <input 
+        type="text" 
+        id="searchQuery" 
+        [(ngModel)]="searchQuery" 
+        placeholder="Enter product name" 
+        class="form-control"
+      />
+      <button (click)="searchProducts()" class="btn btn-primary mt-2">Search</button>
+    </div>
+
+  <!-- Price Filter Form -->
+  <div class="filter-container mb-3">
+    <label for="minPrice">Min Price:</label>
+    <input type="number" id="minPrice" [(ngModel)]="minPrice" placeholder="Enter min price" class="form-control" />
+
+    <label for="maxPrice">Max Price:</label>
+    <input type="number" id="maxPrice" [(ngModel)]="maxPrice" placeholder="Enter max price" class="form-control" />
+
+    <button (click)="filterByPrice()" class="btn btn-primary mt-2">Filter</button>
+  </div>
+
+  <!-- Product Table -->
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product Name</th>
+        <th>Description</th>
+        <th>Stock Quantity</th>
+        <th>Creation Date</th>
+        <th>Brand</th>
+        <th>Price</th>
+        <th>Category</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products">
+        <td>{{ product.idProduct }}</td>
+        <td>{{ product.productName }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.stockquantity }}</td>
+        <td>{{ product.creationDate }}</td>
+        <td>{{ product.brand }}</td>
+        <td>{{ product.price | currency }}</td>
+        <td>{{ product.footballProductsCategory }}</td>
+        <td>
+          <button class="btn btn-primary" (click)="editProduct(product.idProduct)">Update</button>
+          <button class="btn btn-primary" (click)="showdetailsProduct(product.idProduct)">Details</button>
+          <button class="btn btn-danger" (click)="deleteProduct(product.idProduct)">Delete</button>
+          <button (click)="goToShopSelection(product.idProduct!)">Assign to Shop</button>
+          <button *ngIf="product.idProduct" (click)="addToWishlist(product.idProduct)">Add to Wishlist</button>
+         <button *ngIf="product.idProduct" (click)="removeFromWishlist(product.idProduct)">Remove from Wishlist</button>
+         <div class="mt-2">
+          <button (click)="loadReviews(product.idProduct!)" class="btn btn-sm btn-info mb-2">
+            Load Reviews
+          </button>
+        
+          <div *ngIf="reviews.get(product.idProduct!)">
+            <div *ngFor="let review of reviews.get(product.idProduct!)">
+              <p>
+                ⭐ Rating: {{ review.rating }}
+                <button (click)="updateReview(review.id!, review.rating + 1)" class="btn btn-sm btn-secondary ml-2">+1</button>
+                <button (click)="updateReview(review.id!, review.rating - 1)" class="btn btn-sm btn-secondary">-1</button>
+              </p>
+            </div>
+          </div> 
+        
+          <!-- Add New Review with Stars -->
+          <div class="mt-2">
+            <div class="star-rating">
+              <span *ngFor="let star of stars; let i = index" 
+                    [ngClass]="{'filled': i < newRatings[product.idProduct!]}"
+                    (click)="selectRating(product.idProduct!, i + 1)">
+                ★
+              </span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="product.idProduct">
+          <!-- Toggle comment input form -->
+          <button (click)="toggleCommentInput(product.idProduct)">
+            {{ showCommentInput[product.idProduct] ? 'Cancel' : 'Add Comment' }}
+          </button>
+        
+          <!-- Comment Input Form -->
+          <div *ngIf="showCommentInput[product.idProduct]" class="comment-input">
+            <textarea [(ngModel)]="newComments[product.idProduct]" placeholder="Enter your comment"></textarea>
+            <button (click)="submitComment(product.idProduct)">Submit Comment</button>
+          </div>
+        
+          <!-- Toggle comment visibility -->
+          <button (click)="toggleComments(product.idProduct)">
+            {{ showComments[product.idProduct] ? 'Hide Comments' : 'Show Comments' }}
+          </button>
+        
+          <!-- Comment List -->
+          <div *ngIf="showComments[product.idProduct]" class="comments-section">
+            <h4>Comments:</h4>
+            <div *ngIf="productComments[product.idProduct] && productComments[product.idProduct].length > 0; else noComments">
+
+              <div *ngFor="let comment of productComments[product.idProduct]">
+                <p>{{ comment.text }}</p>
+                <button (click)="likeComment(comment.id, product.idProduct)">👍 {{ comment.likes }}</button>
+                <button (click)="dislikeComment(comment.id, product.idProduct)">👎 {{ comment.dislikes }}</button>
+              </div>
+            </div>
+            <!-- Fallback if no comments -->
+            <ng-template #noComments>
+              <p>No comments yet.</p>
+            </ng-template>
+          </div>
+        </div>
+        <h2>Product Recommendations</h2>
+
+<!-- Age and Budget Input Form -->
+<form (ngSubmit)="loadRecommendations()">
+  <label for="age">Age:</label>
+  <input type="number" id="age" [(ngModel)]="age" name="age" required />
+
+  <label for="budget">Budget:</label>
+  <input type="number" id="budget" [(ngModel)]="budget" name="budget" required />
+
+  <button type="submit">Get Recommendations</button>
+</form>
+
+<!-- Show Recommendations -->
+<h3>Recommended Products</h3>
+<ul>
+  <li *ngFor="let p of recommendedProducts">
+    {{ p.productName }} - {{ p.predicted_acceptance_percentage | number:'1.0-2' }}%
+  </li>
+</ul>
+
+
+        
+
+        
+
+         
+         
+         
+         
+
+          
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Add Product Button -->
+  <div class="text-center">
+    <button (click)="addProduct()" class="btn btn-success">Add Product</button>
+  </div>
+  <button (click)="goToWishlist()">Go to Wishlist</button>
+
+</div>
+<div class="alert alert-info" *ngIf="averagePrice > 0">
+  <strong>Average Product Price:</strong> {{ averagePrice | currency }}
+</div>
+<div class="alert alert-info" *ngIf="averageStockQuantity > 0">
+  <strong>Average Stock Quantity:</strong> {{ averageStockQuantity }}
+</div>
+
+

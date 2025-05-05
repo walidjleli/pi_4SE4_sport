@@ -2,16 +2,40 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-5 mx-auto text-center">
-          <h1 class="text-white">Players</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, molestias repudiandae pariatur.</p>
+          <h1 class="text-white">Joueurs</h1>
+          <p> Ici, vous pouvez consulter tous les athlètes qui participent activement à nos sessions d'entraînement. Découvrez leurs noms, leurs postes et familiarisez-vous avec les talents passionnés de nos équipes !</p>
         </div>
       </div>
     </div>
   </div>
 
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">Liste des Joueurs</h2>
   
-  
-  <div class="site-section">
+    <section class="site-section">
+      <div class="container">
+        <h2 class="heading">Nos Joueurs</h2>
+        <div class="row">
+          <div *ngFor="let player of players" class="col-md-4 mb-4">
+            <div class="p-4 bg-light rounded">
+              <h4>{{ player.firstName }} {{ player.lastName }}</h4>
+              <p>Poste: {{ player.poste }}</p>
+              
+              <!-- Ajoute ici la sécurité pour éviter les erreurs -->
+              <p *ngIf="player.subgroup && player.subgroup.team">
+                Équipe : {{ player.subgroup.team.teamName }}
+              </p>
+              <p *ngIf="!player.subgroup || !player.subgroup.team">
+                Équipe : Non assignée
+              </p>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="site-section">
     <div class="container">
       <div class="row">
         <div class="col-6 title-section">

@@ -1,0 +1,12 @@
+<div style="max-width: 600px; margin: auto;">
+    <h2>Chat with Gemini</h2>
+    <textarea [(ngModel)]="userMessage" rows="4" style="width: 100%;" placeholder="Enter your message..."></textarea>
+    <br />
+    <button (click)="sendMessage()">Send</button>
+  
+    <div *ngIf="botReply">
+      <h4>Gemini:</h4>
+      <p>{{ botReply }}</p>
+    </div>
+  </div>
+  
