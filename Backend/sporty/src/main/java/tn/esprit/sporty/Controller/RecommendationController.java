@@ -20,7 +20,7 @@ import java.util.Optional;
 public class RecommendationController {
 
     private final UserRepository userRepository;
-    private final IStatService statService; // ou ton StatsRepository
+    private final IStatService statService;
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/recommend/{userId}")
@@ -29,14 +29,14 @@ public class RecommendationController {
         Optional<Stats> statsOpt = statService.getStatisticsByUserId(userId); // tu l'as déjà
 
         if (userOpt.isEmpty() || statsOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Utilisateur ou stats introuvables");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(" Utilisateur ou stats introuvables");
         }
 
         User user = userOpt.get();
         Stats stats = statsOpt.get();
 
         if (user.getPoste() == null) {
-            return ResponseEntity.badRequest().body("❌ Poste non défini pour ce joueur");
+            return ResponseEntity.badRequest().body("Poste non défini pour ce joueur");
         }
 
         // Préparer le body JSON pour FastAPI

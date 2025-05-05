@@ -24,7 +24,7 @@ public class TrainingSessionController {
     private final EmailService emailService;
 
 
-    // ✅ Créer une nouvelle session
+    //  Créer une nouvelle session
     @PostMapping
     public ResponseEntity<TrainingSession> createSession(@RequestBody TrainingSession session) {
         TrainingSession createdSession = trainingSessionService.createSession(session);
@@ -36,7 +36,7 @@ public class TrainingSessionController {
         return ResponseEntity.ok(teams);
     }
 
-    // ✅ Marquer la présence
+    //  Marquer la présence
     @PutMapping("/{sessionId}/attendance/{userId}")
     public ResponseEntity<Attendance> markAttendance(
             @PathVariable int sessionId,
@@ -47,7 +47,7 @@ public class TrainingSessionController {
         return ResponseEntity.ok(attendance);
     }
 
-    // ✅ Obtenir les présences pour une session
+    //  Obtenir les présences pour une session
     @GetMapping("/{sessionId}/attendance")
     public ResponseEntity<List<Attendance>> getSessionAttendance(@PathVariable int sessionId) {
         return ResponseEntity.ok(trainingSessionService.getAttendanceBySession(sessionId));
