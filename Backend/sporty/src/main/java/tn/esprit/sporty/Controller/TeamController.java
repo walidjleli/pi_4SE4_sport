@@ -98,7 +98,6 @@ public class TeamController {
         }
     }
 
-    // ✅ Supprimer une équipe
 
 
     // ✅ Ajouter un joueur à une équipe
@@ -197,7 +196,7 @@ public class TeamController {
             User previousCoach = team.getCoach();
             previousCoach.setTeam(null);  // Dissocier le coach de l'équipe
             userRepository.save(previousCoach);  // Sauvegarder les modifications dans la base de données
-            log.info("🆘 Coach ID={} libéré de l'équipe ID={}", previousCoach.getId(), teamId);
+            log.info(" Coach ID={} libéré de l'équipe ID={}", previousCoach.getId(), teamId);
         }
 
         // 🚨 Vérifier si ce coach est déjà assigné à une autre équipe
@@ -212,7 +211,7 @@ public class TeamController {
         team.setCoach(coach);
         teamService.updateTeam(teamId, team);
 
-        return ResponseEntity.ok("✅ Coach affecté avec succès !");
+        return ResponseEntity.ok(" Coach affecté avec succès !");
     }
 
 
@@ -222,8 +221,8 @@ public class TeamController {
     @PutMapping("/{teamId}/setDoctor")
     public ResponseEntity<?> setDoctorForTeam(@PathVariable int teamId, @RequestBody Map<String, Integer> payload) {
         if (!payload.containsKey("doctorId")) {
-            log.warn("❌ Requête invalide : `doctorId` est manquant !");
-            return ResponseEntity.badRequest().body("❌ Erreur : `doctorId` est requis !");
+            log.warn(" Requête invalide : `doctorId` est manquant !");
+            return ResponseEntity.badRequest().body(" Erreur : `doctorId` est requis !");
         }
 
         int doctorId = payload.get("doctorId");
@@ -233,20 +232,20 @@ public class TeamController {
         Optional<User> doctorOpt = userRepository.findById(doctorId);
 
         if (teamOpt.isEmpty()) {
-            log.warn("❌ Équipe ID={} introuvable", teamId);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Équipe introuvable !");
+            log.warn(" Équipe ID={} introuvable", teamId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(" Équipe introuvable !");
         }
         if (doctorOpt.isEmpty()) {
-            log.warn("❌ Docteur ID={} introuvable", doctorId);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("❌ Docteur introuvable !");
+            log.warn(" Docteur ID={} introuvable", doctorId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(" Docteur introuvable !");
         }
 
         Team team = teamOpt.get();
         User doctor = doctorOpt.get();
 
         if (!Role.DOCTOR.equals(doctor.getRole())) {
-            log.warn("❌ L'utilisateur ID={} n'est pas un docteur", doctorId);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("⚠️ L'utilisateur sélectionné n'est pas un docteur !");
+            log.warn(" L'utilisateur ID={} n'est pas un docteur", doctorId);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(" L'utilisateur sélectionné n'est pas un docteur !");
         }
 
         // 🚨 Libérer le docteur de l'équipe précédente sans le supprimer
@@ -254,53 +253,49 @@ public class TeamController {
             User previousDoctor = team.getDoctor();
             previousDoctor.setTeam(null);  // Dissocier le docteur de l'équipe
             userRepository.save(previousDoctor);  // Sauvegarder les modifications dans la base de données
-            log.info("🆘 Docteur ID={} libéré de l'équipe ID={}", previousDoctor.getId(), teamId);
+            log.info(" Docteur ID={} libéré de l'équipe ID={}", previousDoctor.getId(), teamId);
         }
 
-        // 🚨 Vérification si le docteur est déjà affecté à une autre équipe
+        //  Vérification si le docteur est déjà affecté à une autre équipe
         List<Team> allTeams = teamService.getAllTeams();
         for (Team t : allTeams) {
             if (t.getDoctor() != null && t.getDoctor().getId() == doctorId && t.getTeamId() != teamId) {
-                log.warn("⚠️ Docteur ID={} est déjà affecté à l'équipe ID={}", doctorId, t.getTeamId());
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("⚠️ Ce docteur est déjà affecté à une autre équipe !");
+                log.warn(" Docteur ID={} est déjà affecté à l'équipe ID={}", doctorId, t.getTeamId());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(" Ce docteur est déjà affecté à une autre équipe !");
             }
         }
 
         // Affectation du docteur
         team.setDoctor(doctor);
         teamService.updateTeam(teamId, team);
-        log.info("✅ Docteur ID={} affecté avec succès à l'équipe ID={}", doctorId, teamId);
+        log.info(" Docteur ID={} affecté avec succès à l'équipe ID={}", doctorId, teamId);
 
         return ResponseEntity.ok(team);
     }
-
-
-
-    ///////////
 
     ///////////
     @PutMapping("/{teamId}/removePlayer")
     public ResponseEntity<?> removePlayerFromTeam(@PathVariable int teamId, @RequestBody Map<String, Integer> payload) {
         int playerId = payload.getOrDefault("playerId", -1);
         if (playerId == -1) {
-            return ResponseEntity.badRequest().body(Map.of("error", "❌ `playerId` est requis !"));
+            return ResponseEntity.badRequest().body(Map.of("error", "`playerId` est requis !"));
         }
 
         Optional<Team> teamOpt = teamService.getTeamById(teamId);
         Optional<User> playerOpt = userRepository.findById(playerId);
 
         if (teamOpt.isEmpty() || playerOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "❌ Équipe ou joueur introuvable !"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Équipe ou joueur introuvable !"));
         }
 
         Team team = teamOpt.get();
         User player = playerOpt.get();
 
         if (!team.getPlayers().contains(player)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "⚠️ Ce joueur n'appartient pas à cette équipe !"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", " Ce joueur n'appartient pas à cette équipe !"));
         }
 
-        // 🔥 Supprimer le joueur de l'équipe
+        //  Supprimer le joueur de l'équipe
         player.setTeam(null);
         userRepository.save(player);
         team.getPlayers().remove(player);
@@ -308,7 +303,7 @@ public class TeamController {
 
         log.info("🗑 Joueur ID={} retiré de l'équipe ID={}", playerId, teamId);
 
-        // ✅ Retourner un objet JSON valide
+        //  Retourner un objet JSON valide
         return ResponseEntity.ok(Map.of(
                 "message", "✅ Joueur retiré avec succès.",
                 "team", team
@@ -316,8 +311,8 @@ public class TeamController {
     }
 
 
-    ///
-    // ✅ Supprimer une équipe
+
+    //  Supprimer une équipe
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTeam(@PathVariable int id) {
         log.info("🔍 Requête DELETE reçue pour supprimer l'équipe ID={}", id);
@@ -327,8 +322,8 @@ public class TeamController {
             log.info("✅ Équipe ID={} supprimée avec succès.", id);
             return ResponseEntity.ok(Map.of("message", "✅ Équipe supprimée avec succès."));
         } else {
-            log.warn("❌ Échec de suppression, équipe ID={} introuvable.", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "❌ Équipe introuvable."));
+            log.warn(" Échec de suppression, équipe ID={} introuvable.", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", " Équipe introuvable."));
         }
     }
 
