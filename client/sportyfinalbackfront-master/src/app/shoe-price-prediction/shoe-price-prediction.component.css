@@ -1,0 +1,67 @@
+/* Ensures the input fields are visible and easy to interact with */
+input {
+    width: 90%;  /* Reduced width to make inputs smaller */
+    padding: 8px;  /* Smaller padding */
+    margin: 5px 0 10px;  /* Reduced margin to make it more compact */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 14px;  /* Smaller font size */
+  }
+  
+  /* Focus effect to indicate active input */
+  input:focus {
+    border-color: #4A90E2;
+    outline: none;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  }
+  
+  /* Label styling to ensure labels are readable and correctly aligned */
+  label {
+    font-size: 14px;  /* Smaller font size */
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: inline-block;
+    color: #333;
+  }
+  
+  /* Styling for the form container to make it look better */
+  form {
+    max-width: 350px;  /* Reduced width of the form */
+    margin: 150px auto;  /* Moved the form much lower on the page */
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Ensures the submit button is styled properly */
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px;  /* Smaller padding */
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;  /* Smaller font size */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Change button color on hover */
+  button[type="submit"]:hover {
+    background-color: #357ABD;
+  }
+  
+  /* Add a little space around the inputs */
+  div {
+    margin-bottom: 10px;  /* Reduced bottom margin */
+  }
+  
+  /* Add styling for the AI logo */
+  .ai-logo {
+    display: block;
+    max-width: 200px; /* Adjust the width of the logo */
+    margin: 0 auto 30px; /* Center the logo and give space below it */
+  }
+  

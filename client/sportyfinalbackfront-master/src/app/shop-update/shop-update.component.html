@@ -1,0 +1,102 @@
+<div class="container mt-4">
+    <h2>Update Shop</h2>
+    
+    <form (ngSubmit)="updateShop()" #shopForm="ngForm">
+      <div class="form-group">
+        <label for="nom">Shop Name</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="nom" 
+          [(ngModel)]="shop.nom" 
+          name="nom" 
+          required />
+      </div>
+  
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="location" 
+          [(ngModel)]="shop.location" 
+          name="location" 
+          required />
+      </div>
+  
+      <div class="form-group">
+        <label for="contactNumber">Contact Number</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="contactNumber" 
+          [(ngModel)]="shop.contactNumber" 
+          name="contactNumber" 
+          required />
+      </div>
+  
+      <div class="form-group">
+        <label for="openingHours">Opening Hours</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="openingHours" 
+          [(ngModel)]="shop.openingHours" 
+          name="openingHours" 
+          required />
+      </div>
+  
+      <div class="form-group">
+        <label for="closingHours">Closing Hours</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="closingHours" 
+          [(ngModel)]="shop.closinghours" 
+          name="closinghours" 
+          required />
+      </div>
+  
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          class="form-control" 
+          id="email" 
+          [(ngModel)]="shop.email" 
+          name="email" 
+          required />
+      </div>
+  
+      <div class="form-group">
+        <label for="categorie">Category</label>
+        <select 
+          class="form-control" 
+          id="categorie" 
+          [(ngModel)]="shop.categorie" 
+          name="categorie" 
+          required>
+          <option *ngFor="let category of categoryList" [value]="category">
+            {{ category }}
+          </option>
+        </select>
+      </div>
+  
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea 
+          class="form-control" 
+          id="description" 
+          [(ngModel)]="shop.description" 
+          name="description" 
+          rows="3" 
+          required></textarea>
+      </div>
+  
+      <button 
+        type="submit" 
+        class="btn btn-success" 
+        [disabled]="!shopForm.form.valid">Update Shop</button>
+    </form>
+  </div>
+  

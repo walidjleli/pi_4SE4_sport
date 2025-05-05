@@ -1,0 +1,7 @@
+<h2>Select a Shop</h2>
+<ul>
+  <li *ngFor="let shop of shops">
+    {{ shop.nom }} - {{ shop.location }}
+    <button *ngIf="shop.idShop !== undefined" (click)="assignProductToShop(shop.idShop!)">Assign</button>
+  </li>
+</ul>

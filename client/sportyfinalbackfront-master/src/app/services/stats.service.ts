@@ -1,31 +1,25 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { Stats } from '../models/stats';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatsService {
-  private apiUrl = 'http://localhost:8090/rest/stat';
+  private baseUrl = 'http://localhost:8090/rest/stat';
 
   constructor(private http: HttpClient) {}
 
-  private getHttpOptions() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.warn("⚠️ Aucun token trouvé, l'utilisateur n'est peut-être pas connecté !");
-      return { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }; // 
-    }
-    return {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-      })
-    };
-  }
-  
-
   addStats(stats: Stats, userId: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/add/${userId}`, stats, this.getHttpOptions());
+    return this.http.post(`${this.baseUrl}/add/${userId}`, stats);
+  }
+
+  getStatsByUserId(userId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/user/${userId}`);
+  }
+
+  updateStats(id: number, stats: Stats): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`, stats);
   }
 }

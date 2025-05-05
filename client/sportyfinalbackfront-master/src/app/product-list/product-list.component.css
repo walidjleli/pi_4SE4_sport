@@ -1,0 +1,65 @@
+.table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: #1e1e1e; /* Fond sombre */
+    color: #e0e0e0; /* Texte clair */
+}
+
+.table th,
+.table td {
+    text-align: center;
+    padding: 12px;
+    border: 1px solid #333; /* Bordure sombre */
+}
+
+.table th {
+    background-color: #292929; /* Fond légèrement plus clair pour le header */
+    color: #ffffff; /* Texte blanc */
+    font-weight: bold;
+    text-transform: uppercase; /* Texte en majuscules pour un effet plus classe */
+}
+
+.table td {
+    background-color: #252525; /* Fond légèrement plus clair que le reste */
+}
+
+.table tr:hover {
+    background-color: #3a3a3a; /* Effet hover plus clair */
+}
+
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    background-color: #444; /* Gris foncé classe */
+    color: #fff;
+    border: 1px solid #666; /* Bordure subtile */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #666; /* Effet hover plus clair */
+    border-color: #888;
+}
+
+button:disabled {
+    background-color: #555;
+    border-color: #777;
+    cursor: not-allowed;
+    color: #999;
+}
+.star-rating {
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .star-rating span {
+    color: gray;
+  }
+  
+  .star-rating span.filled {
+    color: gold;
+  }
+  

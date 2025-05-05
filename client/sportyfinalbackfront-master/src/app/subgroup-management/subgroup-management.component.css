@@ -1,0 +1,165 @@
+/* Conteneur principal */
+.subgroup-management-container {
+  padding: 20px;
+  background-color: #121212;
+  color: #f5f5f5;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Section sélection équipe */
+.select-team {
+  margin-bottom: 20px;
+}
+
+.select-team select {
+  padding: 8px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+/* Liste des sous-groupes */
+.subgroup-list {
+  padding: 0;
+  list-style: none;
+}
+
+.subgroup-item {
+  margin-bottom: 20px;
+  background-color: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Header de chaque sous-groupe */
+.subgroup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subgroup-title {
+  font-weight: bold;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+/* Boutons */
+button {
+  padding: 8px 16px;
+  margin: 4px 4px 0 0;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover:not([disabled]) {
+  filter: brightness(1.1);
+}
+
+button[disabled] {
+  background-color: #666;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Couleurs des boutons */
+.manage-button {
+  background-color: #17a2b8;
+}
+
+.delete-button {
+  background-color: #dc3545;
+}
+
+.show-users-button {
+  background-color: #6f42c1;
+}
+
+.add-button {
+  background-color: #28a745;
+}
+
+.remove-button {
+  background-color: #ff3e3e;
+}
+
+.confirm-button {
+  background-color: #007bff;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+}
+
+/* Zone de confirmation */
+.confirmation-dialog {
+  margin-top: 20px;
+  background-color: #222;
+  border: 1px solid #444;
+  padding: 16px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+/* Zone de création */
+.create-subgroup {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.subgroup-input {
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  width: 250px;
+}
+
+/* Messages */
+.error-message {
+  margin-top: 16px;
+  padding: 10px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border-radius: 5px;
+  font-size: 14px;
+  border: 1px solid #f5c6cb;
+  text-align: center;
+}
+
+/* Listes utilisateurs */
+ul {
+  padding-left: 16px;
+}
+
+li {
+  margin-bottom: 8px;
+  color: #dddddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
+.subgroup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px; /* ✅ Espace entre nom et boutons */
+}
+
+.subgroup-title {
+  font-size: 22px;          /* ✅ Taille du texte plus grande */
+  font-weight: 700;         /* ✅ Gras */
+  color: #ffffff;
+  margin-right: 16px;       /* ✅ Espace entre le titre et les boutons */
+}

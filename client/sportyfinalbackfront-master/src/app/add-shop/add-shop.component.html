@@ -1,0 +1,34 @@
+<div class="container">
+    <h2>Add New Shop</h2>
+  
+    <form (ngSubmit)="addShop()">
+      <label for="nom">Shop Name:</label>
+      <input type="text" id="nom" [(ngModel)]="shop.nom" name="nom" required />
+  
+      <label for="location">Location:</label>
+      <input type="text" id="location" [(ngModel)]="shop.location" name="location" required />
+  
+      <label for="contactNumber">Contact Number:</label>
+      <input type="text" id="contactNumber" [(ngModel)]="shop.contactNumber" name="contactNumber" required />
+  
+      <label for="openingHours">Opening Hours:</label>
+      <input type="text" id="openingHours" [(ngModel)]="shop.openingHours" name="openingHours" required />
+  
+      <label for="closingHours">Closing Hours:</label>
+      <input type="text" id="closinghours" [(ngModel)]="shop.closinghours" name="closinghours" required />
+  
+      <label for="email">Email:</label>
+      <input type="email" id="email" [(ngModel)]="shop.email" name="email" required />
+  
+      <label for="description">Description:</label>
+      <textarea id="description" [(ngModel)]="shop.description" name="description" required></textarea>
+  
+      <label for="categorie">Category:</label>
+      <select id="categorie" [(ngModel)]="shop.categorie" name="categorie" required>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+  
+      <button type="submit">Add Shop</button>
+    </form>
+  </div>
+  

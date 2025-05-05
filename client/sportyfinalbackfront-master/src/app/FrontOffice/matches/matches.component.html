@@ -9,6 +9,23 @@
     </div>
   </div>
 
+  <section class="site-section">
+    <div class="container">
+      <h2 class="heading">Training Sessions</h2>
+      <div class="row">
+        <div *ngFor="let session of trainingSessions" class="col-md-6 mb-4">
+          <div class="p-4 bg-dark text-white rounded">
+            <h4>{{ session.name }}</h4>
+            <p>Start: {{ session.startDate | date }}</p>
+            <p>End: {{ session.endDate | date }}</p>
+            <p>Duration: {{ session.duration }} minutes</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+
   
   
   <div class="container">

@@ -90,20 +90,17 @@ export class TeamManagementComponent implements OnInit {
     });
   }
 
-  selectTeam(team: Team) {
-    this.selectedTeam = null; // 🔥 Réinitialise pour éviter un affichage incorrect
-
-    // 📡 Récupérer les détails de l'équipe sélectionnée depuis le backend
-    this.teamService.getTeamById(team.teamId!).subscribe({
-        next: (updatedTeam) => {
-            console.log("📡 Équipe chargée :", updatedTeam);
-            this.selectedTeam = updatedTeam; // ✅ Met à jour l'équipe sélectionnée
-        },
-        error: (err) => {
-            console.error("❌ Erreur chargement équipe :", err);
-        }
+  selectTeam(team: Team): void {
+    if (!team.teamId) return;
+  
+    this.teamService.getTeamById(team.teamId).subscribe({
+      next: (updatedTeam) => {
+        this.selectedTeam = updatedTeam;
+      },
+      error: (err) => console.error("❌ Erreur chargement équipe :", err)
     });
-}
+  }
+  
 
   
   
@@ -169,9 +166,15 @@ onPlayerSelected(event: Event): void {
             console.log("✅ Coach affecté :", updatedTeam);
             this.selectedTeam!.coach = updatedTeam.coach;
         },
-        error: (err) => console.error("❌ Erreur affectation coach :", err),
+        error: (err) => {
+            console.error("❌ Erreur affectation coach :", err);
+            if (err.status === 409) {
+                alert("⚠️ Ce coach est déjà assigné à une autre équipe !");
+            }
+        },
     });
 }
+
 
 onDoctorSelected(event: Event): void {
   const doctorId = +(event.target as HTMLSelectElement).value;
