@@ -1,0 +1,65 @@
+
+
+ 
+  <div class="site-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-7">
+          <form action="#" method="post" (ngSubmit)="saveHealth()">
+            <div class="form-group">
+              <input type="date" class="form-control" placeholder="Date" required autofocus [(ngModel)]="health.date" name="date">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="UserName" required [(ngModel)]="health.username" name="username">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="UserCondition" required [(ngModel)]="health.userCondition" name="userCondition">
+            </div>
+
+            <div class="form-group">
+              <label for="file">File (Image, Video, etc.)</label>
+              <input type="file" class="form-control" id="file" (change)="onFileSelected($event)">
+            </div>
+          
+            <div class="form-group">
+              <textarea name="" class="form-control" id="" cols="30" rows="10" placeholder="Write notes..." required [(ngModel)]="health.notes" name="notes"></textarea>
+            </div>
+
+          
+            
+            <div class="form-group mb-3">
+              <re-captcha
+                [siteKey]="'6LdxKw0rAAAAAIaNOwEUsU6e5jg8W0h6b_lGc-bC'"
+                (resolved)="handleCaptcha($event)">
+              </re-captcha>
+            </div>
+            
+            
+            <div class="form-group">
+              <input type="submit" class="btn btn-primary py-3 px-5" value="add Health" [disabled]=" !captchaResolved">
+            </div>
+          </form>  
+          
+        </div>
+        <iframe
+        allow="microphone;"
+        src="https://console.dialogflow.com/api-client/demo/embedded/3f77ce6b-8928-42f9-9f2b-6c9f8cc88c0d"
+        class="loading"
+    ></iframe>
+        <div class="col-lg-4 ml-auto">
+           
+          
+          <ul class="list-unstyled">
+            
+            <li class="mb-2">
+              
+            <li class="mb-2">
+              <strong class="text-white d-block">test your brain </strong>
+              <a href="#">time for a test </a>
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
