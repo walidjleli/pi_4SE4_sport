@@ -1,4 +1,4 @@
-# Sporty 🏋️‍♂️⚽🏀 (Angular Project)
+# Sporty 🏋️‍♂️⚽🏀 (Spring boot & Angular Project)
 
 Welcome to **Sporty** — a dynamic sports management application built with **Angular**. This project is designed to help users manage sports competitions, players, and participation with a user-friendly interface and real-time features.
 
